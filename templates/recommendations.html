@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+    <script src="/js/jquery-3.6.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+        crossorigin="anonymous"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/i18n/defaults-*.min.js"></script>
+    <style>
+        .sidenav {
+            height: 100%;
+            width: 250px;
+            /* position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0; */
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+
+        .sidenav a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 20px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidenav a:hover {
+            color: #f1f1f1;
+        }
+
+        @media screen and (max-height: 450px) {
+            .sidenav {
+                padding-top: 15px;
+            }
+
+            .sidenav a {
+                font-size: 18px;
+            }
+        }
+
+        #add-new-puppy input {
+            border-radius: 0;
+        }
+
+        .puppy {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body class=" bg-light">
+    {%include 'navbar.html'%}
+    <div class=" d-flex justify-content-between">
+        {%include 'sidebar.html'%}
+
+        <div class=" pt-5  w-100 me-1" style="margin-left: 255px;">
+
+            <div class=" d-flex justify-content-start my-3">
+                <div class="h4">Puppies</div>
+                <button class="btn btn-sm btn-success mx-2" role="button" data-bs-toggle="modal"
+                    data-bs-target="#add-new-puppy">Add new</button>
+            </div>
+            <p>Here willl manage your puppies, and litter. Will help you with recommendations on
+                how
+                you can manage yor
+                puppies.</p>
+
+            <div class="modal fade" data-bs-backdrop="false" id="add-new-puppy" tabindex="-1" role="dialog">
+                <div class="modal-dialog rounded-0 modal-lg">
+                    <div class="modal-content rounded-0">
+                        <div class="modal-header py-2">
+                            <h5 class="modal-title">Add New Puppy</h5>
+                            <!-- <button type="button" class="close btn" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="h1" aria-hidden="true">&times;</span>
+                            </button> -->
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="row mt-4 ">
+                                    <div class="col-md-6 form-group p_star">
+                                        <label for="id" class="col-form-label">Identify (name or ID):</label>
+                                        <input type="text" required="" class="form-control" name="id">
+                                    </div>
+                                    <div class="col-md-6 form-group p_star">
+                                        <label for="birth_date" class="col-form-label">Birth Date:</label>
+                                        <input type="datetime-local" required="" class="form-control" name="birth_date">
+                                    </div>
+                                    <div class="col-md-6 form-group p_star">
+                                        <label for="birth_weight" class="col-form-label">Birth Weight(grams):</label>
+                                        <input type="number" min="100" required class="form-control" name="birth_weight"
+                                            placeholder="Birth Weigth">
+                                    </div>
+                                    <div class="col-md-6 form-group p_star">
+                                        <label for="message-text" class="col-form-label">Breed:</label>
+                                        <select name="breed" class="form-select form-select-sm" id="">
+                                            <option value="german_sherperd">German Sherpard</option>
+                                            <option value="maltese">Maltese</option>
+                                            <option value="mastiff">Mastiff</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 form-group p_star">
+                                        <label for="sex" class="col-form-label">Sex:</label>
+                                        <div class=" d-flex justify-content-start">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="sex" value="male"
+                                                    checked>
+                                                <label class="form-check-label" for="sex">
+                                                    Male
+                                                </label>
+                                            </div>
+                                            <div class="form-check mx-2">
+                                                <input class="form-check-input" type="radio" name="sex" value="female"
+                                                    checked>
+                                                <label class="form-check-label" for="sex">
+                                                    Female
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 form-group p_star">
+                                        <label for="message-text" class="col-form-label">Parent:</label>
+                                        <select title="Select|Search Parent Mother" data-selected-text-format="count>2"
+                                            data-live-search="true" required name="parent" data-size="6"
+                                            class="form-control form-control-sm puppy-parent">
+                                            {% for i in range(12)%}
+                                            <option value="">Mother {{i}}</option>
+                                            {%endfor%}
+                                        </select>
+
+                                    </div>
+
+
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-top pt-2">
+                <table class="table table-striped table-responsive">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Birth Date</th>
+                            <th scope="col">Birth Weight</th>
+                            <th scope="col">Age</th>
+                            <th scope="col">Sex</th>
+                            <th scope="col">Parent</th>
+                            <th scope="col">Last Temp Record</th>
+                            <th scope="col">Last Weight Record</th>
+                            <th scope="col">Last Date Record</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="puppy">
+                            <td>03/03/2024</td>
+                            <td></td>
+                            <td>12:00</td>
+                            <td>13:00</td>
+                            <td>1hr</td>
+                            <td>233</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+    <script>
+        $(function () {
+            $("input[name='birth_date']").prop('max', new Date().toISOString().substring(0, 16));
+            console.log($("input[name='birth_date']"))
+            $('.puppy-parent').selectpicker();
+            $(".puppy").click(function () {
+                // Redirect to a new page
+                window.location.href = "/puppies/" + 3636
+            })
+        })
+    </script>
+</body>
+
+</html>

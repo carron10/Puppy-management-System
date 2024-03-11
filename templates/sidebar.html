@@ -1,0 +1,75 @@
+<style>
+    .sidenav {
+        height: 100%;
+        /* position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0; */
+        overflow-x: hidden;
+        transition: 0.5s;
+        padding-top: 60px;
+    }
+
+    .sidenav.open{
+        width: 250px;
+    }
+    .sidenav a {
+        padding: 8px 8px 8px 32px;
+        text-decoration: none;
+        font-size: 20px;
+        color: #818181;
+        display: block;
+        transition: 0.3s;
+    }
+   
+    .sidenav a:hover {
+        color: #f1f1f1;
+    }
+    .body-content{
+        margin-left: 255px;
+    }
+
+    @media (max-width: 780px) {
+        .sidenav {
+            width: 0;
+        }
+        .body-content{
+            margin-left: 5px;
+        }
+    }
+
+    @media screen and (max-height: 450px) {
+        .sidenav {
+            padding-top: 15px;
+        }
+
+        .sidenav a {
+            font-size: 18px;
+        }
+    }
+
+    .centered2 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+<div id="mySidenav" class="sidenav open h-100 fixed-top bg-light border">
+    <a href="/adults">Adults</a>
+    <a href="/puppies">Puppies</a>
+    <a href="/recommendations">Recommendations</a>
+    <!-- <a href="#">Notifications</a> -->
+</div>
+<script>
+    $(function(){
+        $(".toggle-sidebar").click(function(){
+            if($(".sidenav").hasClass("open")){
+                $(".sidenav").removeClass("open").css("width",)
+                $(".body-content").
+            }else{
+                $(".sidenav").removeClass("close").addClass("open")
+                $(".body-content").removeClass("open").addClass("close")
+            }
+        })
+    })
+</script>

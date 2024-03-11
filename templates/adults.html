@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script type="module" src="/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .sidenav {
+            height: 100%;
+            width: 250px;
+            /* position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0; */
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+
+        .sidenav a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 20px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidenav a:hover {
+            color: #f1f1f1;
+        }
+
+        @media screen and (max-height: 450px) {
+            .sidenav {
+                padding-top: 15px;
+            }
+
+            .sidenav a {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body class=" bg-light">
+    {%include 'navbar.html'%}
+    <div class=" d-flex justify-content-between">
+        {%include 'sidebar.html'%}
+
+        <div class=" pt-5  w-100 me-1" style="margin-left: 255px;">
+            <div class="text-center h4 py-2">Puppy Adults</div>
+            <p class=" text-center">I this page you need to add the information about the parents(Females) of the
+                puppies.</p>
+            <div class=" d-flex justify-content-start py-2">
+                <button class="btn btn-sm btn-success" role="button" data-bs-toggle="modal"
+                    data-bs-target="#add-new-puppy">Add new</button>
+            </div>
+            <div class="modal fade" data-bs-backdrop="false" id="add-new-puppy" tabindex="-1" role="dialog">
+                <div class="modal-dialog rounded-0 modal-lg">
+                    <div class="modal-content rounded-0">
+                        <div class="modal-header py-2">
+                            <h5 class="modal-title">Add New Adult</h5>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="row mt-4 ">
+                                    <div class="col-md-6 form-group ">
+                                        <label for="id" class="col-form-label">Identify (name or ID):</label>
+                                        <input type="text" required="" class="form-control" name="id">
+                                    </div>
+
+                                    <div class="col-md-6 form-group ">
+                                        <label for="birth_weight" class="col-form-label">Weight(grams):</label>
+                                        <input type="number" min="100" required class="form-control" name="birth_weight"
+                                            placeholder="Birth Weigth">
+                                    </div>
+                                    <div class="col-md-6 form-group ">
+                                        <label for="message-text" class="col-form-label">Breed:</label>
+                                        <select name="breed" class="form-select form-select-sm" id="">
+                                            <option value="german_sherperd">German Sherpard</option>
+                                            <option value="maltese">Maltese</option>
+                                            <option value="mastiff">Mastiff</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 form-group ">
+                                        <label for="num_of_litters" class="col-form-label">Number of Litters:</label>
+                                        <input type="number" min="100" required class="form-control" name="num_of_litters"
+                                            placeholder="Num of Litters">
+                                    </div>
+                                    <div class="col-md-6 form-group ">
+                                        <label for="avg_litters" class="col-form-label">Average Litters:</label>
+                                        <input type="number" min="100" required class="form-control" name="avg_litters"
+                                            placeholder="Litters Average">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="  ">
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Identity</th>
+                            <th scope="col">Weight</th>
+                            <th scope="col">Age</th>
+
+                            <th scope="col">Breed</th>
+                            <th scope="col">NumberOfLitters</th>
+                            <th scope="col">AverageLitterSize</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>KitK</td>
+                            <td>5/03/2024</td>
+                            <td></td>
+                            <td>12:00</td>
+                            <td>13:00</td>
+                            <td>1hr</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+
+</html>
