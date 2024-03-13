@@ -7,9 +7,16 @@ from sqlalchemy.orm import relationship, backref
 from dataclasses import dataclass
 from sqlalchemy.sql import func
 from flask_security.utils import hash_password
-
+from sqlalchemy.ext.declarative import declared_attr
 db = SQLAlchemy()
 
+TABLE_PREFIX="puppy_"
+class MyModel(db.Model):
+  __abstract__ = True
+  # Use @declared_attr to dynamically set the table name with prefix
+  @declared_attr
+  def __tablename__(cls):
+    return f"{TABLE_PREFIX}{cls.__name__}".lower()
 
 
 # Define models
@@ -17,23 +24,19 @@ db = SQLAlchemy()
 #user roles table
 roles_users = db.Table(
     'puppy_roles_users',
-    db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
-    db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
+    db.Column('user_id', db.Integer(), db.ForeignKey('puppy_user.id')),
+    db.Column('role_id', db.Integer(), db.ForeignKey('puppy_role.id'))
 )
 
 # Role Model
-class Role(db.Model, RoleMixin):
-    __tablename__ = 'role'
-    __table_prefix__ = 'puppy_'
+class Role(MyModel, RoleMixin):
     id = Column(Integer(), primary_key=True)
     name = Column(String(80), unique=True)
     description = Column(String(255))
 
 
 # User Model
-class User(db.Model, UserMixin,SerializerMixin):
-    __tablename__ = 'user'
-    __table_prefix__ = 'puppy_'
+class User(MyModel, UserMixin,SerializerMixin):
     id = Column(Integer, primary_key=True)
     email = Column(String(255), unique=True)
     username = Column(String(255))
@@ -50,7 +53,7 @@ class User(db.Model, UserMixin,SerializerMixin):
     active = Column(Boolean())
     confirmed_at = Column(DateTime())
     # serialize_only=('roles.id',)
-    roles = relationship('Role', secondary='roles_users',
+    roles = relationship('Role', secondary='puppy_roles_users',
                          backref=backref('users', lazy='dynamic'))
     fs_uniquifier = Column(String(64), unique=True, nullable=False)
    
