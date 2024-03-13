@@ -16,7 +16,7 @@ db = SQLAlchemy()
 
 #user roles table
 roles_users = db.Table(
-    'roles_users',
+    'puppy_roles_users',
     db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
     db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
 )
@@ -24,6 +24,7 @@ roles_users = db.Table(
 # Role Model
 class Role(db.Model, RoleMixin):
     __tablename__ = 'role'
+    __table_prefix__ = 'puppy_'
     id = Column(Integer(), primary_key=True)
     name = Column(String(80), unique=True)
     description = Column(String(255))
@@ -32,6 +33,7 @@ class Role(db.Model, RoleMixin):
 # User Model
 class User(db.Model, UserMixin,SerializerMixin):
     __tablename__ = 'user'
+    __table_prefix__ = 'puppy_'
     id = Column(Integer, primary_key=True)
     email = Column(String(255), unique=True)
     username = Column(String(255))
