@@ -1,0 +1,32 @@
+<!-- add_puppy.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Puppy</title>
+</head>
+<body>
+    <h1>Add New Puppy</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.name.label }} {{ form.name(size=50) }}
+        </div>
+        <div>
+            {{ form.breed.label }} {{ form.breed(size=50) }}
+        </div>
+        <div>
+            {{ form.birth_date.label }} {{ form.birth_date() }}
+        </div>
+        <div>
+            {{ form.weight.label }} {{ form.weight() }}
+        </div>
+        <div>
+            {{ form.temperature.label }} {{ form.temperature() }}
+        </div>
+        <button type="submit">Add Puppy</button>
+    </form>
+</body>
+</html>
