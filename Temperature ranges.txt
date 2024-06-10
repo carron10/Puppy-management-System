@@ -1,0 +1,77 @@
+TEMPERATURES AND INSIGHTS
+
+NORMAL
+		
+Puppy Age	Normal Puppy Body Temperature	Best Room or Environmental Temperature
+1-2 weeks	95°F - 99°F (35°C - 37.2°C)	    85 - 90°F (29.4°C - 32°C)
+2-4 weeks	97°F - 100°F (6.1°C - 37.8°C)   79 - 84°F (26.1°C - 28.8°C)
+
+MESSAGE FOR NORMAL Temperature
+
+A temperature of 36.8 degrees Celsius (98.2 degrees Fahrenheit) in a one-week-old puppy is within the normal range for newborn puppies.
+
+ABNORMAL 
+Temperature Alert:
+Temperature: [Temperature Value]
+
+Based on the temperature reading collected by the monitoring application, the puppy's temperature is within the range of mild fever. Mild fever is typically characterized by temperatures ranging from 102.6°F to 103.5°F (39.2°C to 39.7°C). Please monitor the puppy closely for any changes or symptoms of discomfort. Ensure the puppy remains hydrated and comfortable. If the temperature persists or escalates further, seek veterinary attention promptly to address any underlying health concerns and ensure the well-being of the puppy.
+
+Sure, here are pop-up messages for each temperature range:
+
+SLIGHLTY HIGH 37.8°C-39.2°C
+Puppy temperature is slighlty higher than normal, monitor your puppy closely for any signs of discomfort or unusual behavior.
+
+1. Mild Fever:
+"Attention: Your puppy's temperature is within the range of mild fever (39.2°C to 39.7°C). While this indicates a slight elevation in body temperature, it's important to monitor your puppy closely for any signs of discomfort or unusual behavior. Ensure your puppy stays hydrated and comfortable. If symptoms persist or worsen, consider consulting a veterinarian for further evaluation."
+
+2. Moderate Fever:
+"Alert: Your puppy's temperature is within the range of moderate fever (39.8°C to 40.8°C). This indicates a more significant elevation in body temperature and should be monitored closely. Ensure your puppy stays hydrated and comfortable. Consider consulting a veterinarian promptly for further evaluation and guidance."
+
+3. High Fever:
+"Urgent: Your puppy's temperature is within the range of high fever (40.9°C and above). This indicates a critical elevation in body temperature and requires immediate attention. Please consult a veterinarian urgently for assessment and appropriate treatment. Ensure your puppy remains comfortable and hydrated while seeking medical assistance."
+
+Slightly lower 
+Puppy temperature is slighlty lower than normal, monitor your puppy closely for any signs of discomfort or unusual behavior.
+
+4. Hypothermia:
+"Warning: Your puppy's temperature is below normal range (34°C and below), indicating potential hypothermia. Ensure your puppy is kept warm and comfortable immediately. Wrap your puppy in a blanket and provide a warm environment. Seek veterinary attention promptly for further evaluation and treatment to prevent further complications."
+
+
+
+Sure, here are popup messages for each temperature individually:
+
+1. Mild Fever:
+   "Alert: Your puppy's temperature is within the range of mild fever (102.6°F to 103.5°F or 39.2°C to 39.7°C). Please monitor your puppy closely for any signs of discomfort or changes in behavior. Ensure they remain hydrated and comfortable. If the fever persists or worsens, consider consulting a veterinarian for further evaluation."
+
+2. Moderate Fever:
+   "Warning: Your puppy's temperature indicates a moderate fever (103.6°F to 105.5°F or 39.8°C to 40.8°C). It is important to closely monitor your puppy's condition and take measures to keep them comfortable. Provide plenty of water and a cool environment. If the fever persists or if your puppy shows signs of distress, seek veterinary attention promptly for further assessment and treatment."
+
+3. High Fever:
+   "Emergency: Your puppy's temperature is in the range of high fever (105.6°F and above or 40.9°C and above). This requires immediate attention. Please take your puppy to a veterinarian or emergency animal clinic as soon as possible for urgent evaluation and treatment. High fever can be indicative of a serious underlying condition that requires prompt medical intervention."
+
+4. Hypothermia:
+   "Attention: Your puppy's temperature indicates hypothermia (99.5°F or 37.5°C and below). This condition can be dangerous and requires immediate action. Warm your puppy gently and provide a comfortable environment. Wrap them in blankets and avoid direct heat sources. Seek veterinary assistance promptly for further guidance and treatment to prevent further complications."
+
+These popup messages aim to provide clear guidance and recommendations based on the temperature readings obtained from the application, ensuring the well-being of the puppy and prompt action when necessary.
+
+
+
+
+
+
+During the first 21 days of a puppy's life, their body temperature undergoes changes corresponding to different developmental stages. Here's what the temperatures of puppies are supposed to look like during each stage:
+
+1. **Newborn Stage (Days 1-7):**
+   During the newborn stage, puppies are highly dependent on their mother for warmth and regulation of body temperature. Their body temperature typically ranges from 95.5°F to 100.5°F (35.3°C to 38.1°C) [1]. Newborn puppies are unable to regulate their body temperature independently and rely on external sources of warmth for survival.
+
+2. **Early Puppy Stage (Days 8-14):**
+   As puppies transition into the early puppy stage, their body temperature may increase slightly as they become more active and begin to explore their environment. During this stage, their temperature typically ranges from 98.0°F to 102.0°F (36.7°C to 38.9°C) [2]. Puppies start to develop more control over their body temperature regulation but still require warmth and comfort.
+
+3. **Adolescent Stage (Days 15-21):**
+   By the adolescent stage, puppies' body temperature stabilizes within the normal range for adult dogs. Temperatures usually range from 100.0°F to 102.5°F (37.8°C to 39.2°C) [3]. Puppies become more resilient to temperature changes and are better able to regulate their body heat independently as they continue to grow and develop.
+
+References:
+[1] - Dr. Bobbi Conner, "Neonatal and Pediatric Care," Veterinary Partner, https://veterinarypartner.vin.com/default.aspx?pid=19239&id=4952740
+[2] - Pam Johnson-Bennett, "The Puppy's First Week," The Spruce Pets, https://www.thesprucepets.com/puppys-first-week-2805087
+[3] - Dr. Jennifer Coates, "Normal Body Temperature Range for Dogs," PetMD, https://www.petmd.com/dog/general-health/normal-body-temperature-range-dogs
+https://www.pdsa.org.uk/pet-help-and-advice/pet-health-hub/conditions/hypothermia-in-pets

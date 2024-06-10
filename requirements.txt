@@ -1,5 +1,8 @@
+#Don't install the first two libraries
 uwsgi
 Gunicorn
+
+#Install these either
 psycopg2
 Flask
 Flask-Admin

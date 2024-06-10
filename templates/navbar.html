@@ -1,35 +1,40 @@
-<nav class="navbar navbar-expand-lg border-bottom navbar-light bg-light fixed-top" style=" z-index: 1040">
-    <div class="container px-2">
+<nav class="navbar bg-primary-2  navbar-expand-lg border-bottom  text-white fixed-top" style=" z-index: 1040">
+    <div class="container-fluid">
         <div><a class="navbar-brand" href="/">Dashboard</a>
             <button class="btn toggle-sidebar">☰</button>
         </div>
-        <div class=" d-flex justify-content-end small">
-            <div>Login As: Leonel Magwizaa</div>
-            <a class="btn btn-success btn-sm ms-3" href="/logout">Logout</a>
-        </div>
+        <ul class="nav me-1">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle d-inline-block d-sm-none" href="#" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <img src="{{current_user.avatar}}" alt="" width="30" height="24" class="rounded-circle" />
+                </a>
+                <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" role="button"
+                    data-bs-toggle="dropdown">
+                    <img src="{{current_user.avatar}}" alt="" width="30" height="24" class="rounded-circle" />
+                    <span class="text-dark">
+                        {% if current_user.first_name -%}
+                        {{ current_user.first_name }}
+                        {% else -%}
+                        {{ current_user.email }}
+                        {%- endif %}
+                    </span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a class="dropdown-item" href="/profile"><i class="align-middle me-1" data-feather="user"></i>
+                        Profile</a>
+
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/account-settings"><i class="align-middle me-1"
+                            data-feather="settings"></i>
+                        Settings & Privacy</a>
+                    <a class="dropdown-item" href="/help"><i class="align-middle me-1" data-feather="help-circle"></i>
+                        Help
+                        Center</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/logout">Log out</a>
+                </div>
+            </li>
+        </ul>
     </div>
 </nav>
-<style>
-    textarea:hover,
-    input:not([type='radio']):hover,
-    textarea:active,
-    input:not([type='radio']):active,
-    textarea:focus,
-    input:not([type='radio']):focus,
-    button:focus,
-    button:active,
-    button:hover,
-    label:focus,
-    select:focus,
-    select:active,
-    select:hover .btn:active,
-    .btn.active {
-        outline: 0px !important;
-        -webkit-appearance: none;
-        box-shadow: none !important;
-    }
-</style>
-<link rel="stylesheet" href="/css/bootstrap.min.css">
-    <script type="module" src="/js/bootstrap.bundle.min.js"></script>
-    
-<script src="/js/jquery-3.6.0.js"></script>

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+{% block content %}
+<style>
+    #add-new-puppy input {
+        border-radius: 0;
+    }
+
+    .puppy {
+        cursor: pointer;
+    }
+</style>
+<div class="me-1 pt-4">
+
+    <div class="container">
+        <h2>Puppy Adult Details</h2>
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Name</th>
+                    <td>{{ puppy_adult.name }}</td>
+                </tr>
+                <tr>
+                    <th>Breed</th>
+                    <td>{{ puppy_adult.breed }}</td>
+                </tr>
+                <tr>
+                    <th>Weight in Grams</th>
+                    <td>{{ puppy_adult.weight_in_grams }}</td>
+                </tr>
+                <tr>
+                    <th>Number of Litters</th>
+                    <td>{{ puppy_adult.num_litters }}</td>
+                </tr>
+                <tr>
+                    <th>Average Litters</th>
+                    <td>{{ puppy_adult.avg_litters }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+</div>
+{% endblock %}

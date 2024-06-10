@@ -1,4 +1,13 @@
 <style>
+    body {
+        font-family: Georgia, serif;
+        font-size: 16.5px;
+    }
+
+    p {
+        font-size: 16.5px;
+    }
+
     .sidenav {
         height: 100%;
         /* position: fixed;
@@ -8,11 +17,13 @@
         overflow-x: hidden;
         transition: 0.5s;
         padding-top: 60px;
-    }
-
-    .sidenav.open{
         width: 250px;
     }
+
+    .sidenav.closed {
+        width: 0px;
+    }
+
     .sidenav a {
         padding: 8px 8px 8px 32px;
         text-decoration: none;
@@ -21,19 +32,26 @@
         display: block;
         transition: 0.3s;
     }
-   
+
     .sidenav a:hover {
-        color: #f1f1f1;
+        color: rgb(184, 176, 176);
     }
-    .body-content{
+
+    .body-content {
         margin-left: 255px;
+        overflow-x: auto;
+    }
+
+    .body-content.expand {
+        margin-left: 0
     }
 
     @media (max-width: 780px) {
         .sidenav {
             width: 0;
         }
-        .body-content{
+
+        .body-content {
             margin-left: 5px;
         }
     }
@@ -54,22 +72,24 @@
         align-items: center;
     }
 </style>
-<div id="mySidenav" class="sidenav open h-100 fixed-top bg-light border">
+<div id="mySidenav" class="sidenav h-100 fixed-top bg-light border">
     <a href="/adults">Adults</a>
     <a href="/puppies">Puppies</a>
     <a href="/recommendations">Recommendations</a>
     <!-- <a href="#">Notifications</a> -->
 </div>
 <script>
-    $(function(){
-        $(".toggle-sidebar").click(function(){
-            if($(".sidenav").hasClass("open")){
-                $(".sidenav").removeClass("open").css("width",)
-                $(".body-content").
-            }else{
-                $(".sidenav").removeClass("close").addClass("open")
-                $(".body-content").removeClass("open").addClass("close")
+
+    $(function () {
+        $(".toggle-sidebar").click(function () {
+            if ($(".sidenav").hasClass("closed")) {
+                $(".sidenav").removeClass("closed").width("250px")
+                $(".body-content").removeClass("expand")
+            } else {
+                $(".sidenav").addClass("closed").width("0")
+                $(".body-content").addClass("expand")
             }
         })
+
     })
 </script>
