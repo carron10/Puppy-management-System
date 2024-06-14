@@ -9,7 +9,7 @@
 </head>
 <body>
     <h1>Add New Puppy</h1>
-    <form method="POST">
+    <form method="POST" action="{{ url_for('puppy.add_puppy') }}">
         {{ form.hidden_tag() }}
         <div>
             {{ form.name.label }} {{ form.name(size=50) }}

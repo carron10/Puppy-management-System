@@ -16,9 +16,13 @@ from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from app.models import Role, User, db,Puppy,PuppyAdult,build_sample_db,PuppyRecords
 from app.utils import get_puppies_for_user,get_puppy_by_id,calculate_puppy_age
+from app.routes import puppy_bp
+
+
 app = Flask(__name__,static_url_path='', static_folder='static', template_folder='templates')
 app.config.from_pyfile('config.py')
 db.init_app(app)
+app.register_blueprint(puppy_bp)
 
 
 # Security
@@ -40,7 +44,7 @@ categories={0:"Good",1:"Monitor",2:"Vetinary"}
 @app.route("/")
 @app.route("/index.html")
 @login_required
-def hello():
+def index():
     data={}
     data['puppies']=get_puppies()
     return render_template('index.html',
@@ -116,7 +120,7 @@ def add_adults():
         return "success", 201
     except IntegrityError as e:
         db.session.rollback()
-        return f"Error: {str(e.orig)}", 400
+        return f"Error: {str(e)}", 400
     except Exception as e:
         db.session.rollback()
         return f"Unexpected Error: {str(e)}", 500
@@ -173,7 +177,7 @@ def add_puppies():
         return "Puppy added successfully!", 201
     except Exception as e:
         db.session.rollback()
-        return f"Error: {str(e.orig)}", 400
+        return f"Error: {str(e)}", 400
 
 @app.route("/api/puppies",methods=["DELETE"])
 @login_required
@@ -273,4 +277,4 @@ with app.app_context():
     event.listen(db.get_engine(), 'connect', _fk_pragma_on_connect)
     db.create_all()
     
-    # build_sample_db(app,user_datastore)
+    build_sample_db(app,user_datastore)
