@@ -14,8 +14,13 @@ from flask_security.forms import RegisterForm, Required, StringField
 from flask_security.utils import hash_password
 from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
-from app.models import Role, User, db,Puppy,PuppyAdult,build_sample_db,PuppyRecords
-from app.utils import get_puppies_for_user,get_puppy_by_id,calculate_puppy_age
+from app.models import Role, User, db,Puppy,PuppyAdult,build_sample_db,PuppyRecords,Recommendation,UserAction,Notifications
+from app.utils import (get_puppies_for_user,
+                       get_puppy_by_id,calculate_puppy_age,
+                       quick_check_recommendations_for_puppy,
+                       check_missing_updates, update_recommendations_for_puppy,
+                       get_recommendations
+                       )
 from app.routes import puppy_bp
 
 
@@ -36,24 +41,43 @@ class ExtendedRegisterForm(RegisterForm):
 # security
 security = Security(app, user_datastore, register_form=ExtendedRegisterForm)
 
-categories={0:"Good",1:"Monitor",2:"Vetinary"}
 
-
+def set_notifications():
+    puppies = get_puppies_for_user(current_user.id)
+    data = {}
+    missing_records=[]
+    for puppy in puppies:
+        missing_updates_message,missing_dates = check_missing_updates(puppy.id)
+        if(missing_dates is None):
+            continue
+        note=Notifications(message=missing_updates_message,
+                           notification_category="Warning!",
+                           notification_icon="warning"
+                           )
+        missing_records.append(note)
+        # missing_records.append({
+        #     'puppy_id': puppy.id,
+        #     'puppy_name': puppy.name,
+        #     'missing_updates': missing_updates_message
+        # })
+    data["total_notifications"]=len(missing_records)
+    data['notifications']=missing_records
+    return data
 
 
 @app.route("/")
 @app.route("/index.html")
 @login_required
 def index():
-    data={}
-    data['puppies']=get_puppies()
+    data=set_notifications()
+    data['puppies']=get_puppies_for_user(current_user.id,5)
     return render_template('index.html',
                            page="index",**data)
 
 @app.route("/puppies/<id>")
 @login_required
 def get_puppy_details(id):
-    data={}
+    data=set_notifications()
     puppy=Puppy.query.filter_by(id=id).first()
     if not puppy:
         puppy=Puppy()
@@ -63,7 +87,7 @@ def get_puppy_details(id):
 @app.route("/puppies")
 @login_required
 def puppies_page():
-    data={}
+    data=set_notifications()
     data['puppies']=get_puppies()
     data['adults']=get_adults()
     return render_template('puppies.html',**data,page="puppies")
@@ -71,14 +95,14 @@ def puppies_page():
 @app.route("/adults")
 @login_required
 def adults():
-    data={} 
+    data=set_notifications()
     data['adults']=get_adults()
     return render_template('adults.html',page="adults",**data)
 
 @app.route("/adults/<id>")
 @login_required
 def view_adult_details(id):
-    data={}
+    data=set_notifications()
     puppy_adult=PuppyAdult.query.filter_by(id=id).first()
     if not puppy_adult:
         puppy_adult=PuppyAdult()
@@ -89,9 +113,9 @@ def view_adult_details(id):
 @app.route("/recommendations")
 @login_required
 def recommendations():
-    return render_template('recommendations.html',page="recommendations")
-
-
+    data=set_notifications()
+    data['recommendations']=get_recommendations(current_user)
+    return render_template('recommendations.html',page="recommendations",**data)
 
 
 #######################
@@ -149,7 +173,7 @@ def get_puppies():
         parent = PuppyAdult.query.filter_by(id=id, user_id=current_user.id).first()
         if parent and parent.puppies:
             for puppy in parent.puppies:
-                puppy_dict = puppy.to_dict(rules=['-parent.puppies', '-records', '-parent.user'])
+                puppy_dict = puppy.to_dict(rules=['-parent.puppies','-records','-recommendations', '-records', '-parent.user'])
                 puppy_dict['age'] = calculate_puppy_age(puppy)
                 data.append(puppy_dict)
     else:
@@ -157,7 +181,7 @@ def get_puppies():
         for parent in parents:
             if parent.puppies:
                 for puppy in parent.puppies:
-                    puppy_dict = puppy.to_dict(rules=['-parent.puppies', '-records', '-parent.user'])
+                    puppy_dict = puppy.to_dict(rules=['-parent.puppies','-records','-recommendations', '-records', '-parent.user'])
                     puppy_dict['age'] = calculate_puppy_age(puppy)
                     data.append(puppy_dict)
 
@@ -184,6 +208,21 @@ def add_puppies():
 def delete_puppies():
     return "Done"
 
+
+
+@app.route('/api/quick-check-puppy-health', methods=['POST'])
+@login_required
+def quick_check_puppy_health():
+    data = request.form
+   
+    # weight = data.get("Weight")
+    # day = data.get("Day")
+    # temp = data.get("Temperature")
+    # temp = data.get("")
+
+    status,message=quick_check_recommendations_for_puppy(data)
+    return {"status":status,"message":message}, 201
+
 @app.route('/api/check-puppy-health', methods=['POST'])
 @login_required
 def check_puppy_health():
@@ -207,8 +246,6 @@ def check_puppy_health():
         return "Invalid date format", 400
     
     return "Done", 201
-
-
 
 @app.route('/api/update-puppy-health', methods=['POST'])
 @login_required
@@ -239,34 +276,43 @@ def update_puppy_health():
         return "Record for this date already exists", 400
 
     # Create a new record
-    record = PuppyRecords(date=_date, puppy_id=puppy_id, weigth_value=weight, temp_value=temp)
+    record = PuppyRecords(date=_date, puppy_id=puppy_id, weight_value=weight, temp_value=temp)
     db.session.add(record)
     db.session.commit()
-    
+    update_recommendations_for_puppy(puppy)
     return "Done", 201
 
 
 #######################
 #Other APIs#
 #######################
+@app.route("/record_action", methods=["POST"])
+@login_required
+def record_action():
+    user_id = current_user.id
+    recommendation_id = request.form.get("recommendation_id")
+    action_taken = request.form.get("action_taken")
+    review_date = request.form.get("review_date")
 
-@app.route('/predict',methods=['POST'])
-def predict_():
-    data_to_predict = dict(request.get_json())
-    data_to_predict=pd.DataFrame(data_to_predict)
-    data_to_predict=np.array(data_to_predict)
-    # Load the saved model
-    with open('puppy_management_system_random_forest_model.pkl', 'rb') as file:
-        loaded_rf_classifier = pickle.load(file)
-# Load the saved model
-    with open('puppy_management_system_decision_tree_model.pkl', 'rb') as file:
-        loaded_dct_classifier = pickle.load(file)
+    recommendation = Recommendation.query.get(recommendation_id)
+    if action_taken == "Took puppy to vet" and recommendation:
+        recommendation.follow_up_status = True
+        if review_date:
+            recommendation.follow_up_date = datetime.strptime(review_date, '%Y-%m-%d')
+        db.session.commit()
 
-    dct_y_pred = loaded_dct_classifier.predict(data_to_predict)
-    rf_y_pred = loaded_rf_classifier.predict(data_to_predict)
-    results_1=categories[dct_y_pred[0]]
-    results_2=categories[rf_y_pred[0]]
-    return f"Puppy Status: RF: {results_2} DCT:{results_1}"
+    user_action = UserAction(
+        user_id=user_id,
+        recommendation_id=recommendation_id,
+        action_taken=action_taken,
+        review_date=review_date if review_date else None
+    )
+    db.session.add(user_action)
+    db.session.commit()
+
+    return redirect(url_for("recommendations"))
+
+
 
 
 def _fk_pragma_on_connect(dbapi_con, con_record):

@@ -18,7 +18,11 @@ var addFormData = (v, d) => {
         v[d.name] = d.type == 'checkbox' ? ($(d).is(":checked") ? 1 : 0) : $(d).val();
     };
 };
-
+function reloadPage(delay = 0) {
+    setTimeout(() => {
+        window.location.reload();
+    }, delay)
+}
 function getFormData(id) {
 
     var inputs = $('#' + id + ' :input');

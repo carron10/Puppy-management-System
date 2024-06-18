@@ -141,7 +141,6 @@ Dashboard
         console.log($("input[name='birth_date']"))
         $('.puppy-parent').selectpicker();
         $(".puppy").click(function (e) {
-
             // Redirect to a new page
             window.location.href = "/puppies/" +$(this).attr("data-pp-id")
         });
@@ -154,6 +153,7 @@ Dashboard
                 var data = getFormData("add-new-puppy-form")
                 send("/api/puppies", data, "POST").done(function (data) {
                     Success(data)
+                    reloadPage(1000)
                 }).fail(function (e) {
                     error()
                 })

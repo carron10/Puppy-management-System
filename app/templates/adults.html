@@ -100,6 +100,7 @@ Dashboard
                     var data = getFormData("add-new-adult-form")
                     send("/api/adults", data, "POST").done(function (data) {
                         Success(data)
+                        reloadPage(1000)
                     }).fail(function (err) {
                         error(`${err.responseText}`, err.statusText)
                     })

@@ -1,12 +1,56 @@
-<nav class="navbar bg-primary-2  navbar-expand-lg border-bottom  text-white fixed-top" style=" z-index: 1040">
+<nav class="navbar bg-primary-2  navbar-expand-lg border-bottom  text-white py-1" style=" z-index: 1040">
     <div class="container-fluid">
         <div><a class="navbar-brand text-white h5" href="/">Dashboard</a>
             <button class="btn toggle-sidebar text-white h5">☰</button>
         </div>
         <ul class="nav me-1">
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle d-inline-block d-sm-none" href="#" role="button" data-bs-toggle="dropdown"
-                    aria-expanded="false">
+                <a class="nav-icon dropdown-toggle" href="#" id="alertsDropdown" data-bs-toggle="dropdown">
+                    <div class="position-relative">
+                        <i class="align-middle text-white" data-feather="bell"></i>
+                        {%if total_notifications%}
+                        <span class="indicator">{{total_notifications}}</span>
+                        {%else%}
+                        <span class="indicator">0</span>
+                        {%endif%}
+                    </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end py-0" aria-labelledby="alertsDropdown">
+                    <div class="dropdown-menu-header">
+
+                        {%if total_notifications%}
+                        {{total_notifications}} New Notification(s)
+                        {%else%}
+                        No new Notifications
+                        {%endif%}
+                    </div>
+                    <div class="list-group">
+                        {% for note in notifications%}
+                        <a href="#" class="list-group-item">
+                            <div class="row g-0 align-items-center">
+                                <div class="col-2">
+                                    <i class="text-warning" data-feather="{{note.notification_icon}}"></i>
+                                </div>
+                                <div class="col-10">
+                                    <div class="text-dark">{{note.notification_category}}</div>
+                                    <div class="text-muted small mt-1">{{note.message}}</div>
+                                    <div class="text-muted small mt-1">{{note.time_created}}</div>
+                                </div>
+                            </div>
+                        </a>
+                        {%endfor%}
+                    </div>
+                    <div class="dropdown-menu-footer">
+                        <a href="/notifications" class="text-muted">Show all notifications</a>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+
+
+                <a class="nav-link dropdown-toggle d-inline-block d-sm-none" href="#" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="{{current_user.avatar}}" alt="" width="30" height="24" class="rounded-circle" />
                 </a>
                 <a class="nav-link dropdown-toggle text-white d-none d-sm-inline-block" href="#" role="button"
@@ -38,3 +82,108 @@
         </ul>
     </div>
 </nav>
+
+<style>
+    .dropdown-toggle::after {
+        display: inline-block;
+        margin-left: .255em;
+        vertical-align: .255em;
+        content: "";
+        border-top: .3em solid;
+        border-right: .3em solid transparent;
+        border-bottom: 0;
+        border-left: .3em solid transparent;
+    }
+
+    .nav-flag:after,
+    .nav-icon:after {
+        display: none !important;
+    }
+
+    .dropdown-toggle:after {
+        border: solid;
+        border-width: 0 2px 2px 0;
+        display: inline-block;
+        padding: 2px;
+        transform: rotate(45deg);
+    }
+
+    .dropdown-toggle {
+        white-space: nowrap;
+    }
+
+    @media (max-width: 575.98px) {
+        .nav-icon {
+            padding: .1rem .75rem;
+        }
+    }
+
+    .dropdown .list-group .list-group-item:first-child,
+    .dropdown .list-group .list-group-item:last-child {
+        border-radius: 0;
+    }
+
+    .dropdown .list-group .list-group-item {
+        border-width: 0 0 1px;
+        margin-bottom: 0;
+    }
+
+    .nav-flag,
+    .nav-icon {
+        color: #6c757d;
+        display: block;
+        font-size: 1.5rem;
+        line-height: 1.4;
+        padding: .1rem .8rem;
+        transition: background .1s ease-in-out, color .1s ease-in-out;
+    }
+
+    .nav-item .indicator {
+        background: #3b7ddd;
+        border-radius: 50%;
+        box-shadow: 0 .1rem .2rem rgba(0, 0, 0, .05);
+        color: #fff;
+        display: block;
+        font-size: .675rem;
+        height: 18px;
+        padding: 1px;
+        position: absolute;
+        right: -8px;
+        text-align: center;
+        top: 0;
+        transition: top .1s ease-out;
+        width: 18px;
+    }
+
+    .navbar .nav .dropdown-menu-lg {
+        min-width: 20rem;
+    }
+
+    @media (max-width: 575.98px) {
+        .navbar .nav .dropdown-menu-lg {
+            min-width: 16rem;
+        }
+    }
+
+    .navbar-expand .navbar-nav .dropdown-menu {
+        position: absolute;
+    }
+
+    .position-relative {
+        position: relative !important;
+    }
+
+    .dropdown-menu-header {
+        border-bottom: 1px solid #dee2e6;
+        font-weight: 600;
+        padding: .75rem;
+        text-align: center;
+    }
+
+    .dropdown-menu-footer {
+        display: block;
+        font-size: .75rem;
+        padding: .5rem;
+        text-align: center;
+    }
+</style>
