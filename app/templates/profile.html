@@ -43,8 +43,7 @@ Dashboard
 									username: $('#username').val(),
 									email: $('#email').val(),
 									firstName: $('#firstName').val(),
-									lastName: $('#lastName').val(),
-									active: $('#active').is(':checked')
+									lastName: $('#lastName').val()
 								};
 								// AJAX request to send user data to the server
 								$.ajax({
@@ -55,11 +54,13 @@ Dashboard
 									success: function (response) {
 										// Handle success response
 										console.log(response);
+										Success("User infor updated")
+										reloadPage(1000)
 										// Optionally, show a success message to the user
 									},
 									error: function (xhr, status, error) {
 										// Handle error response
-										console.error(xhr.responseText);
+										error(xhr.responseText);
 										// Optionally, show an error message to the user
 									}
 								});

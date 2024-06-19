@@ -91,6 +91,21 @@ def notifications():
     data["all_notifications"]=set_notifications()[0]
     return render_template('notifications.html',page="notifications",**data)
 
+@app.route('/update_user',methods=['POST'])
+@login_required
+def update_user():
+    data=request.get_json()
+    try:
+        
+      user=User.query.where(User.id==data['id']).first()
+      del data["id"]
+      user=user.values(**data)
+      db.session.execute(user)
+      return "Done",200
+    except Exception as e:
+      print(f'An exception occurred {e}')
+      return "Failed to update",500
+    
 @app.route("/profile")
 @login_required
 def get_profile():
@@ -99,7 +114,13 @@ def get_profile():
     data['user']=current_user
     return render_template('profile.html',page="profile",**data)
 
-
+@app.route("/help")
+@login_required
+def get_help():
+    data={}
+    data["notifications"],data["total_notifications"]=set_notifications(5)
+    data['user']=current_user
+    return render_template('help.html',page="help",**data)
 
 @app.route("/puppies/<id>")
 @login_required
