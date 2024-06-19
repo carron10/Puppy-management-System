@@ -430,11 +430,13 @@ def determine_puppy_health_from_temperature(age_weeks, temperature_celsius):
     # Define the temperature ranges and corresponding messages
     normal_temp_range_1_2_weeks = (35.0, 37.2)
     normal_temp_range_2_4_weeks = (36.1, 37.8)
-    slightly_high_range = (37.8, 39.2)
+    slightly_high_range_2_4_weeks = (37.8, 39.2)
+    slightly_high_range_1_2_weeks = (37.2, 39.2)
     mild_fever_range = (39.3, 39.7)
     moderate_fever_range = (39.8, 40.8)
     high_fever_threshold = 40.9
-    slightly_lower_range = (34.0, 34.9)
+    slightly_lower_range_1_2_weeks = (34.0, 34.9)
+    slightly_lower_range_2_4_weeks = (34.0, 36.0)
     hypothermia_threshold = 34.0
 
     # Define the messages
@@ -452,7 +454,7 @@ def determine_puppy_health_from_temperature(age_weeks, temperature_celsius):
     if age_weeks <= 2:
         if normal_temp_range_1_2_weeks[0] <= temperature_celsius <= normal_temp_range_1_2_weeks[1]:
             status = "NORMAL"
-        elif slightly_high_range[0] <= temperature_celsius <= slightly_high_range[1]:
+        elif slightly_high_range_1_2_weeks[0] <= temperature_celsius <= slightly_high_range_1_2_weeks[1]:
             status = "SLIGHTLY_HIGH"
         elif mild_fever_range[0] <= temperature_celsius <= mild_fever_range[1]:
             status = "MILD_FEVER"
@@ -460,14 +462,14 @@ def determine_puppy_health_from_temperature(age_weeks, temperature_celsius):
             status = "MODERATE_FEVER"
         elif temperature_celsius >= high_fever_threshold:
             status = "HIGH_FEVER"
-        elif slightly_lower_range[0] <= temperature_celsius <= slightly_lower_range[1]:
+        elif slightly_lower_range_1_2_weeks[0] <= temperature_celsius <= slightly_lower_range_1_2_weeks[1]:
             status = "SLIGHTLY_LOWER"
         else:
             status = "HYPOTHERMIA"
     elif 2 < age_weeks <= 4:
         if normal_temp_range_2_4_weeks[0] <= temperature_celsius <= normal_temp_range_2_4_weeks[1]:
             status = "NORMAL"
-        elif slightly_high_range[0] <= temperature_celsius <= slightly_high_range[1]:
+        elif slightly_high_range_2_4_weeks[0] <= temperature_celsius <= slightly_high_range_2_4_weeks[1]:
             status = "SLIGHTLY_HIGH"
         elif mild_fever_range[0] <= temperature_celsius <= mild_fever_range[1]:
             status = "MILD_FEVER"
@@ -475,7 +477,7 @@ def determine_puppy_health_from_temperature(age_weeks, temperature_celsius):
             status = "MODERATE_FEVER"
         elif temperature_celsius >= high_fever_threshold:
             status = "HIGH_FEVER"
-        elif slightly_lower_range[0] <= temperature_celsius <= slightly_lower_range[1]:
+        elif slightly_lower_range_2_4_weeks[0] <= temperature_celsius <= slightly_lower_range_2_4_weeks[1]:
             status = "SLIGHTLY_LOWER"
         else:
             status = "HYPOTHERMIA"
