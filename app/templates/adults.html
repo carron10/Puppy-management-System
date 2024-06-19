@@ -45,7 +45,8 @@ Dashboard
                                     placeholder="Num of Litters">
                             </div>
                             <div class="col-md-6 form-group ">
-                                <label for="avg_litters" class="col-form-label">Average number of puppies/Litters:</label>
+                                <label for="avg_litters" class="col-form-label">Average number of
+                                    puppies/Litters:</label>
                                 <input type="number" min="1" class="form-control" name="avg_litters"
                                     placeholder="Litters Average">
                             </div>
@@ -72,6 +73,7 @@ Dashboard
                     <th scope="col">Breed</th>
                     <th scope="col">NumberOfLitters</th>
                     <th scope="col">AverageLitterSize</th>
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -83,7 +85,11 @@ Dashboard
                     <td>{{adult.breed}}</td>
                     <td>{{adult.num_litters}}</td>
                     <td>{{adult.avg_litters}}</td>
-                    
+                    <td>
+                        <a role="button" class="delete-puppyadult" data-cf-id="{{adult.id}}"><i
+                                data-feather="trash-2"></i></a>
+                        <a href="/adults/{{ adult.id }}"><i data-feather="external-link"></i></a>
+                    </td>
                 </tr>
                 {%endfor%}
             </tbody>
@@ -92,6 +98,15 @@ Dashboard
     <script>
         $(function () {
             new DataTable('#adults-table');
+            $(".delete-puppyadult").click(function (e) {
+                var puppy_id = $(this).attr("data-cf-id");
+                send(`/api/adults/${puppy_id}`, {}, "DELETE").done(function (data) {
+                    success(data.message, "DONE!!")
+                    reloadPage(2000)
+                }).fail(function (err, d) {
+                    error(`${err.responseText}`, err.statusText)
+                })
+            })
             $("#add-new-adult-form").submit(function (e) {
                 e.stopPropagation()
                 e.preventDefault()

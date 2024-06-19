@@ -9,13 +9,33 @@ Dashboard
         border-radius: 0;
     }
 
-    .puppy {
-        cursor: pointer;
+    .chart-container {
+        position: relative;
+        height: 100%;
+    }
+
+    .chart-container .card-body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    .chart-container .chart {
+        width: 100%;
+        height: 100%;
+    }
+
+    .chart-container canvas {
+        display: block;
+        width: 100% !important;
+        height: 100% !important;
     }
 </style>
 <div class="me-1 pt-4">
     <div class="container">
         <h2>Puppy Details</h2>
+        <input type="number" hidden id="puppy_id" value="{{puppy.id}}">
         <table class="table">
             <tbody>
                 <tr>
@@ -44,8 +64,88 @@ Dashboard
                 </tr>
             </tbody>
         </table>
-
-        <h3>Weight and Temperature Records</h3>
+        <div class="row">
+            <div class=" col-sm-6 px-1 my-2">
+                {% for recommendation in recommendations%}
+                {%if recommendation.tag=="review_qtn"%}
+                <div class="card my-1 alert vertinary-update alert-info bg-light p-0" role="alert">
+                    <div class="card-body py-1">
+                        <div class="update-qtn">
+                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
+                                <use xlink:href="#info-fill" />
+                            </svg>
+                            {{recommendation.msg| safe}}
+                        </div>
+                        <div class="visually-hidden review-date">
+                            What was the review date?
+                            <br>
+                            <div class="col col-md-6">
+                                <input type="datetime-local" class="rounded-0 form-control form-control-sm w-50"
+                                    name="review_date" id="review_date">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-end py-1 my-0">
+                        <button class="badge  bg-primary visually-hidden btn vertinary-update-done">Done</button>
+                        <button class="badge  bg-primary btn vertinary-update-yes">Yes</button>
+                    </div>
+                </div>
+                {%else%}
+                <div class="card my-1 alert alert-danger p-0" role="alert">
+                    <div class="card-body py-1">
+                        <div>
+                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                                <use xlink:href="#exclamation-triangle-fill" />
+                            </svg>
+                            {{recommendation.msg| safe}}
+                        </div>
+                    </div>
+                </div>
+                {%endif%}
+                {%endfor%}
+            </div>
+            <div class=" col-sm-6 px-1 my-2">
+                <button type="button" role="button" data-bs-toggle="modal" data-bs-target="#quick-check-puppy-health"
+                    class="btn btn-success btn-sm mt-1">Add new Record</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mt-1 chart-container" id="weight">
+                <div class="card flex-fill w-100">
+                    <div class="card-header m-0 p-1">
+                        <div class="h5 float-start">Weight</div>
+                        <select class="float-end border bg-white graph-type">
+                            <option selected value="bar">bar</option>
+                            <option  value="line">Line</option>
+                            <option value="scatter">Scatter</option>
+                        </select>
+                    </div>
+                    <div class="card-body d-flex w-100 p-0 m-0">
+                        <div class="align-self-center chart chart-sm">
+                            <canvas id="weight-bar-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mt-1 chart-container" id="temp">
+                <div class="card flex-fill w-100">
+                    <div class="card-header m-0 p-1">
+                        <div class="h5 float-start">Temperature</div>
+                        <select class="float-end border bg-white graph-type">
+                            <option value="bar">bar</option>
+                            <option selected value="line">Line</option>
+                            <option value="scatter">Scatter</option>
+                        </select>
+                    </div>
+                    <div class="card-body d-flex w-100 p-0 m-0">
+                        <div class="align-self-center chart chart-sm">
+                            <canvas class="w-100 h-100" id="temp-bar-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h3 class="pt-4">Weight and Temperature Records</h3>
         <table class="table">
             <thead>
                 <tr>
@@ -64,8 +164,138 @@ Dashboard
                 {% endfor %}
             </tbody>
         </table>
-    </div>
+        <div class="modal fade" data-bs-backdrop="false" id="quick-check-puppy-health" tabindex="-1" role="dialog">
+            <div class="modal-dialog rounded-0 modal-lg">
+                <div class="modal-content rounded-0">
+                    <div class="modal-header py-2">
+                        <h5 class="modal-title">Update Puppy Record</h5>
+                        <p class=" text-info">Add temperature and weight for today or any day before today!</p>
+                    </div>
+                    <form id="quick-check-puppy-health-form" class="needs-validation" novalidate>
+                        <div class="modal-body">
+                            <div class="row">
 
+                                <div class="col-md-12 form-group p_star">
+                                    <label for="message-text" class="col-form-label small muted mt-1">Puppy:</label>
+                                    <select title="Select|Search Puppy" data-selected-text-format="count>2"
+                                        data-live-search="true" required name="puppy_id" data-size="6"
+                                        class="form-control form-control-sm puppy">
+                                        {%for puppy in puppies%}
+                                        <option value="{{puppy.id}}">{{puppy.name}}</option>
+                                        {%endfor%}
+                                    </select>
+                                </div>
+                                <div class="col-md-12 form-group p_star">
+                                    <label for="_date" class="col-form-label small muted mt-1">RecordDate:</label>
+                                    <input type="date" id="_date" class="form-control form-control-sm" name="_date">
+                                </div>
+                                <div class="col-md-12 form-group p_star">
+                                    <label for="weigth" class="col-form-label small muted mt-1">Weigth(grams):</label>
+                                    <input type="number" min="0" required class="form-control form-control-sm"
+                                        name="weight" placeholder=" Weight">
+                                </div>
+                                <div class="col-md-12 form-group p_star">
+                                    <label for="temperature"
+                                        class="col-form-label small muted mt-1">Temperature:</label>
+                                    <input type="number" min="0" class="form-control form-control-sm" name="temperature"
+                                        required placeholder="Temperature">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            Chart.defaults.elements.line.borderWidth = 1;
+            Chart.defaults.elements.point.radius = 1;
+            function drawGraph(element, data, type = "bar", label) {
+                var existingChart = Chart.getChart(element);
+                if (existingChart) {
+                    existingChart.destroy();
+                }
+                var labels = data.map(entry => new Date(entry.date).toLocaleDateString());
+                var values = data.map(entry => entry.value);
+
+                var v = new Chart(document.getElementById(element), {
+                    type: type,
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: label,
+                            backgroundColor: window.theme.primary,
+                            borderColor: window.theme.primary,
+                            hoverBackgroundColor: window.theme.primary,
+                            hoverBorderColor: window.theme.primary,
+                            data: values
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+                return v;
+            }
+            function updateGraphs() {
+                var chats = ['temp', "weight"], puppy_id = $("#puppy_id").val()
+                for (let i = 0; i < chats.length; i++) {
+                    const type = chats[i], graph = $(`#${type} .graph-type`).val();
+                    send(`/api/records/${puppy_id}/${type}`).done(function (data) {
+                        if (type == "weight") {
+                            data.forEach(function (v, i, arr) {
+                                v['value'] = v.weight_value
+                            })
+
+                            drawGraph(type + "-bar-chart", data, graph, 'shsh')
+                        } else {
+                            data.forEach(function (v, i, arr) {
+                                v['value'] = v.temp_value
+                            })
+                            drawGraph(type + "-bar-chart", data, graph, 'shsh')
+                        }
+
+                    }).fail(function (err) {
+                        error(`${err.responseText}`, err.statusText)
+                    })
+                }
+            }
+            updateGraphs();
+            $(".graph-type").change(function (e) {
+                var element = $(e.target), graph_type = element.val(), chart = element.parents(".chart-container").first();
+
+                var existingChart = Chart.getChart(chart.find("canvas").attr("id"));
+                // Update the chart configuration to change the chart type
+                existingChart.config.type = graph_type;
+                // Update the chart with the new configuration
+                existingChart.update();
+            })
+            $(".vertinary-update-yes").click(function () {
+                var u = $(this).parents(".vertinary-update").first()
+                u.find(".update-qtn,.vertinary-update-yes").addClass("visually-hidden")
+                u.find(".review-date,.vertinary-update-done").removeClass("visually-hidden")
+            })
+            $(".vertinary-update-done").click(function () {
+                var u = $(this).parents(".vertinary-update").first(),
+                    review_date = u.find(".review-date #review_date").val()
+                send("/api/record_action", { review_date: review_date, action_taken: "Took puppy to vet" }, "POST").done(function (data) {
+                    u.hide()
+                }).fail(function (err) {
+                    error("Error, can't update the server!");
+                })
+            });
+        })
+    </script>
 
     <!-- <div class="container">
         <h2>Puppy Details</h2>

@@ -230,21 +230,21 @@ def build_sample_db(app:Flask, user_datastore:SQLAlchemyUserDatastore):
         db.session.commit()
     
         # Check if user already exists
-        user = user_datastore.find_user(email='test@me.com')
+        user = user_datastore.find_user(email='leenezzy99@gmail.com')
     
         # Create user if it does not exist
         if not user:
             user=user_datastore.create_user(
-                first_name='Test',
-                email='test@me.com',
+                first_name='Leonel',
+                email='leenezzy99@gmail.com',
                 password=hash_password('1234'),
                 roles=[user_role, super_user_role]
             )
     
         db.session.commit()
 
-        for i in range(3):
-            num_litters=random.randint(2,4)
+        for i in range(1):
+            num_litters=1#random.randint(2,4)
             adult=PuppyAdult(name=f"ParentAdult{i}",
                          weight_in_grams=random.randint(4000,8000),
                          num_litters=num_litters,
@@ -255,8 +255,8 @@ def build_sample_db(app:Flask, user_datastore:SQLAlchemyUserDatastore):
             db.session.add(adult)
             db.session.commit()
             for j in range(num_litters):
-                birth_weight=random.randint(2,4)
-                birth_day = random.randint(1, 21)
+                birth_weight=random.randint(250,500)
+                birth_day = random.randint(1,10)
                 today = datetime.today().date()
                 birth_date = today - timedelta(days=birth_day)
                 puppy=Puppy(name=f"TPestuppy{i}{j}",

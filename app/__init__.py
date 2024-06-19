@@ -21,14 +21,18 @@ from app.utils import (get_puppies_for_user,
                        check_missing_updates, update_recommendations_for_puppy,
                        get_recommendations
                        )
+from datetime import datetime,timedelta
+import datetime as dt
 from app.routes import puppy_bp
+from flask_mailman import Mail, EmailMessage
 
 
 app = Flask(__name__,static_url_path='', static_folder='static', template_folder='templates')
 app.config.from_pyfile('config.py')
 db.init_app(app)
 app.register_blueprint(puppy_bp)
-
+# create mail object
+mail = Mail(app)
 
 # Security
 user_datastore = SQLAlchemyUserDatastore(db, User,Role)
@@ -42,52 +46,78 @@ class ExtendedRegisterForm(RegisterForm):
 security = Security(app, user_datastore, register_form=ExtendedRegisterForm)
 
 
-def set_notifications():
+def set_notifications(limit=None):
     puppies = get_puppies_for_user(current_user.id)
     data = {}
     missing_records=[]
+    i=0
     for puppy in puppies:
         missing_updates_message,missing_dates = check_missing_updates(puppy.id)
         if(missing_dates is None):
             continue
+        if (limit!=None) and i>=limit:
+            break
         note=Notifications(message=missing_updates_message,
                            notification_category="Warning!",
-                           notification_icon="warning"
+                           notification_icon="bell",
+                           time_created=datetime.now()
                            )
         missing_records.append(note)
+        i+=1
         # missing_records.append({
         #     'puppy_id': puppy.id,
         #     'puppy_name': puppy.name,
         #     'missing_updates': missing_updates_message
         # })
-    data["total_notifications"]=len(missing_records)
-    data['notifications']=missing_records
-    return data
+    return missing_records,len(missing_records)
 
 
 @app.route("/")
 @app.route("/index.html")
 @login_required
 def index():
-    data=set_notifications()
+    data={}
+    data["notifications"],data["total_notifications"]=set_notifications(5)
     data['puppies']=get_puppies_for_user(current_user.id,5)
+    data['recommendations']=get_recommendations()
     return render_template('index.html',
                            page="index",**data)
+
+@app.route("/notifications")
+@login_required
+def notifications():
+    data={}
+    data["notifications"],data["total_notifications"]=set_notifications(5)
+    data["all_notifications"]=set_notifications()[0]
+    return render_template('notifications.html',page="notifications",**data)
+
+@app.route("/profile")
+@login_required
+def get_profile():
+    data={}
+    data["notifications"],data["total_notifications"]=set_notifications(5)
+    data['user']=current_user
+    return render_template('profile.html',page="profile",**data)
+
+
 
 @app.route("/puppies/<id>")
 @login_required
 def get_puppy_details(id):
-    data=set_notifications()
+    data={}
+    data["notifications"],data["total_notifications"]=set_notifications(5)
     puppy=Puppy.query.filter_by(id=id).first()
     if not puppy:
         puppy=Puppy()
     data['puppy']=puppy
+    data['recommendations']=get_recommendations(current_user,puppy.id)
     return render_template("view_puppy.html",**data)
 
 @app.route("/puppies")
 @login_required
 def puppies_page():
-    data=set_notifications()
+    data={}
+    data["notifications"],data["total_notifications"]=set_notifications(5)
     data['puppies']=get_puppies()
     data['adults']=get_adults()
     return render_template('puppies.html',**data,page="puppies")
@@ -95,14 +125,16 @@ def puppies_page():
 @app.route("/adults")
 @login_required
 def adults():
-    data=set_notifications()
+    data={}
+    data["notifications"],data["total_notifications"]=set_notifications(5)
     data['adults']=get_adults()
     return render_template('adults.html',page="adults",**data)
 
 @app.route("/adults/<id>")
 @login_required
 def view_adult_details(id):
-    data=set_notifications()
+    data={}
+    data["notifications"],data["total_notifications"]=set_notifications(5)
     puppy_adult=PuppyAdult.query.filter_by(id=id).first()
     if not puppy_adult:
         puppy_adult=PuppyAdult()
@@ -113,7 +145,8 @@ def view_adult_details(id):
 @app.route("/recommendations")
 @login_required
 def recommendations():
-    data=set_notifications()
+    data={}
+    data["notifications"],data["total_notifications"]=set_notifications(5)
     data['recommendations']=get_recommendations(current_user)
     return render_template('recommendations.html',page="recommendations",**data)
 
@@ -149,10 +182,26 @@ def add_adults():
         db.session.rollback()
         return f"Unexpected Error: {str(e)}", 500
 
-@app.route("/api/adults/<id>",methods=["DELETE"])
+@app.route("/api/adults/<int:id>", methods=["DELETE"])
 @login_required
 def delete_adults(id):
-    return "Done"
+    with current_app.app_context():
+        # Retrieve the adult puppy by ID
+        adult = PuppyAdult.query.get(id)
+
+        if not adult:
+            return "Adult puppy not found", 404
+
+        # Check if the current user is the owner of the adult puppy
+        if adult.user_id != current_user.id:
+            return "Unauthorized", 403
+
+        # Delete the adult puppy and commit the changes to the database
+        db.session.delete(adult)
+        db.session.commit()
+
+        return "Adult puppy deleted successfully", 200
+
 
 @app.route("/api/adults",methods=["PUT"])
 @login_required
@@ -163,6 +212,7 @@ def update_adults():
 #######################
 #Puppy CRUD-methodds #
 #######################
+
 @app.route("/api/puppies", methods=["GET"])
 @login_required
 def get_puppies():
@@ -191,7 +241,7 @@ def get_puppies():
 @login_required
 def add_puppies():
     data = request.form.to_dict()
-    data["birth_date"] = datetime.datetime.strptime(
+    data["birth_date"] = datetime.strptime(
         data["birth_date"], "%Y-%m-%dT%H:%M")
     
     try:
@@ -203,10 +253,26 @@ def add_puppies():
         db.session.rollback()
         return f"Error: {str(e)}", 400
 
-@app.route("/api/puppies",methods=["DELETE"])
+@app.route("/api/puppies/<int:puppy_id>", methods=["DELETE"])
 @login_required
-def delete_puppies():
-    return "Done"
+def delete_puppy(puppy_id):
+    with current_app.app_context():
+        # Retrieve the puppy by ID
+        puppy = Puppy.query.get(puppy_id)
+    
+        if not puppy:
+            return "Puppy not found", 404
+
+        # Check if the current user is the owner of the puppy's parent
+        if puppy.parent.user_id != current_user.id:
+            return"Unauthorized", 403
+
+        # Delete the puppy and commit the changes to the database
+        db.session.delete(puppy)
+        db.session.commit()
+
+        return "Puppy deleted successfully", 200
+
 
 
 
@@ -241,7 +307,7 @@ def check_puppy_health():
     temp = data.get("temperature")
 
     try:
-        _date = datetime.datetime.strptime(_date, '%Y-%m-%d')  # Adjust date format as needed
+        _date = datetime.strptime(_date, '%Y-%m-%d')  # Adjust date format as needed
     except ValueError:
         return "Invalid date format", 400
     
@@ -265,7 +331,7 @@ def update_puppy_health():
     temp = data.get("temperature")
 
     try:
-        _date = datetime.datetime.strptime(_date, '%Y-%m-%d')  # Adjust date format as needed
+        _date = datetime.strptime(_date, '%Y-%m-%d')  # Adjust date format as needed
     except ValueError:
         return "Invalid date format", 400
 
@@ -279,26 +345,33 @@ def update_puppy_health():
     record = PuppyRecords(date=_date, puppy_id=puppy_id, weight_value=weight, temp_value=temp)
     db.session.add(record)
     db.session.commit()
-    update_recommendations_for_puppy(puppy)
-    return "Done", 201
+    recommendations=update_recommendations_for_puppy(puppy)
+    return recommendations, 201
 
 
 #######################
 #Other APIs#
 #######################
-@app.route("/record_action", methods=["POST"])
+@app.route("/api/records/<puppy_id>/<type>")
+@login_required
+def get_records(puppy_id,type):
+    records=PuppyRecords.query.filter_by(puppy_id=puppy_id).all()
+    return [record.to_dict(rules=['-puppy']) for record in records]
+
+@app.route("/api/record_action", methods=["POST"])
 @login_required
 def record_action():
     user_id = current_user.id
     recommendation_id = request.form.get("recommendation_id")
     action_taken = request.form.get("action_taken")
     review_date = request.form.get("review_date")
-
+    review_date = datetime.strptime(review_date, '%Y-%m-%dT%H:%M')
     recommendation = Recommendation.query.get(recommendation_id)
     if action_taken == "Took puppy to vet" and recommendation:
         recommendation.follow_up_status = True
+        recommendation.status=True
         if review_date:
-            recommendation.follow_up_date = datetime.strptime(review_date, '%Y-%m-%d')
+            recommendation.follow_up_date = review_date
         db.session.commit()
 
     user_action = UserAction(
@@ -309,8 +382,7 @@ def record_action():
     )
     db.session.add(user_action)
     db.session.commit()
-
-    return redirect(url_for("recommendations"))
+    return "Done"
 
 
 
@@ -323,4 +395,4 @@ with app.app_context():
     event.listen(db.get_engine(), 'connect', _fk_pragma_on_connect)
     db.create_all()
     
-    build_sample_db(app,user_datastore)
+    # build_sample_db(app,user_datastore)

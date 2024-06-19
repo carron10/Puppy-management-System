@@ -95,7 +95,7 @@ function error(str, title) {
     Swal.fire({
         title:
             (title == undefined ? "Error" : title)
-        , text: str,
+        , html: str,
         icon: 'error'
     })
     // $("#alert").modal("show").find('.modal-content').addClass(
@@ -104,11 +104,14 @@ function error(str, title) {
     //             "<b>" + str + "</b>");
     // $('#alert').find('.title').html('<b>' + (title == undefined ? "Error" : title) + '</b>').addClass('text-white');
 }
+function success(str, title) {
+    Success(str, title);
+}
 function Success(str, title) {
     Swal.fire({
         title:
             (title == undefined ? "Success!!" : title)
-        , text: str,
+        , html: str,
         icon: 'success'
     })
     // $("#alert").modal("show").find('.modal-content').addClass(

@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+{% block content %}
+<div class=" pt-1  me-1">
+	<div class=" d-flex justify-content-start my-3">
+		<div class="h4">User Profile</div>
+	</div>
+	<div class="card">
+		<div class="card-header bg-primary-2">
+			User Details
+		</div>
+		<div class="card-body">
+			<div class="row">
+				<div class="col-md-4">
+					<img src="{{ user.avatar }}" class="img-fluid rounded-circle mb-3" alt="User Avatar">
+				</div>
+				<div class="col-md-8">
+					<form id="userForm">
+						<ul class="list-group list-group-flush">
+							<li class="list-group-item">ID: <span id="userId">{{ user.id }}</span></li>
+							<li class="list-group-item">Username: <input type="text" id="username"
+									value="{{ user.username }}"></li>
+							<li class="list-group-item">Email: <input type="email" id="email" value="{{ user.email }}">
+							</li>
+							<li class="list-group-item">First Name: <input type="text" id="firstName"
+									value="{{ user.first_name }}"></li>
+							<li class="list-group-item">Last Name: <input type="text" id="lastName"
+									value="{{ user.last_name }}"></li>
+
+
+						</ul>
+						<button type="submit" class="btn btn-primary mt-3">Update</button>
+					</form>
+					<script>
+						$(document).ready(function () {
+							$('#userForm').submit(function (event) {
+								event.preventDefault(); // Prevent default form submission
+								var userData = {
+									id: $('#userId').text(),
+									username: $('#username').val(),
+									email: $('#email').val(),
+									firstName: $('#firstName').val(),
+									lastName: $('#lastName').val(),
+									active: $('#active').is(':checked')
+								};
+								// AJAX request to send user data to the server
+								$.ajax({
+									type: 'POST',
+									url: '/update_user', // Update with your server endpoint
+									data: JSON.stringify(userData),
+									contentType: 'application/json',
+									success: function (response) {
+										// Handle success response
+										console.log(response);
+										// Optionally, show a success message to the user
+									},
+									error: function (xhr, status, error) {
+										// Handle error response
+										console.error(xhr.responseText);
+										// Optionally, show an error message to the user
+									}
+								});
+							});
+						});
+
+					</script>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{%endblock%}

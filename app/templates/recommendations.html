@@ -12,28 +12,6 @@ Dashboard
     </div>
     <div class="border-top pt-2">
 
-        {%for missing_data in missing_records%}
-        <div class="card my-1 alert alert-danger p-0" role="alert">
-            <div class="card-body py-1">
-                <!-- <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
-                    <use xlink:href="#info-fill" />
-                </svg> -->
-                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
-                    <use xlink:href="#exclamation-triangle-fill" />
-                </svg>
-                {{missing_data.missing_updates}}
-            </div>
-            <div class="card-footer text-end py-1 my-0">
-
-                <span class="h6">Affected Puppy:</span>
-                <a href="/puppies/{{missing_data.puppy_id}}" class="badge  bg-danger">{{missing_data.puppy_name}}</a>
-                <a href="/puppies/{{missing_data.puppy_id}}" class="badge  bg-success btn">Update Now</a>
-                <!-- <button type="button" class="btn-sm badge btn-outline-warning">
-                        <i class="fas fa-trash text-dark" aria-hidden="true"></i>
-                    </button> -->
-            </div>
-        </div>
-        {%endfor%}
         <!-- <div class="card my-1 alert vertinary-update alert-info bg-light p-0" role="alert">
             <div class="card-body py-1">
                 <div class="update-qtn">
@@ -56,24 +34,59 @@ Dashboard
                 <button class="badge  bg-primary btn vertinary-update-yes">Yes</button>
             </div>
         </div> -->
+        {% if recommendations%}
         {% for recommendation in recommendations%}
-        <div class="card my-1 alert alert-danger p-0" role="alert">
+        {%if recommendation.tag=="review_qtn"%}
+        <div class="card my-1 alert vertinary-update alert-info bg-light p-0" role="alert">
             <div class="card-body py-1">
                 <div class="update-qtn">
                     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
                         <use xlink:href="#info-fill" />
                     </svg>
-                    {{recommendation.msg|raw}}
+                    {{recommendation.msg| safe}}
                 </div>
-
+                <div class="visually-hidden review-date">
+                    What was the review date?
+                    <br>
+                    <div class="col col-md-6">
+                        <input type="text" id="recommendation_id" hidden value="{{recommendation.id}}">
+                        <input type="datetime-local" class="rounded-0 form-control form-control-sm w-50"
+                            name="review_date" id="review_date">
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-end py-1 my-0">
+                <button class="badge  bg-primary visually-hidden btn vertinary-update-done">Done</button>
+                <button class="badge  bg-primary btn vertinary-update-yes">Yes</button>
+            </div>
+        </div>
+        {%else%}
+        <div class="card my-1 alert alert-danger p-0" role="alert">
+            <div class="card-body py-1">
+                <div>
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                        <use xlink:href="#exclamation-triangle-fill" />
+                    </svg>
+                    {{recommendation.msg| safe}}
+                    <input type="text" id="recommendation_id" hidden value="{{recommendation.id}}">
+                </div>
             </div>
             <div class="card-footer text-end py-1 my-0">
                 <span class="h6">Affected Puppy:</span>
                 <a href="/puppies/{{recommendation.puppy_id}}"
-                    class="badge  bg-success btn">{{recommendation.puppy.name}}/a>
+                    class="badge  bg-success btn">{{recommendation.puppy.name}}</a>
+                <!-- <button type="button" class="btn-sm badge btn-outline-warning">
+                        <i class="fas fa-trash text-dark" aria-hidden="true"></i>
+                    </button> -->
             </div>
         </div>
+        {%endif%}
         {%endfor%}
+        {%else%}
+        <div class="alert alert-info">
+            There are no recommendations, check notifications if there are no updates needed for the puppies!!
+        </div>
+        {%endif%}
         <!-- <div class="alert alert-success d-flex align-items-center" role="alert">
             <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
                 <use xlink:href="#check-circle-fill" />
@@ -108,6 +121,22 @@ Dashboard
             u.find(".update-qtn,.vertinary-update-yes").addClass("visually-hidden")
             u.find(".review-date,.vertinary-update-done").removeClass("visually-hidden")
         })
+        $(".vertinary-update-done").click(function () {
+            var u = $(this).parents(".vertinary-update").first(),
+                review_date = u.find(".review-date #review_date").val(),
+                recommendation_id = u.find(".review-date #recommendation_id").val();
+            if (review_date === '') {
+                error("Please input the review date!");
+            } else {
+                send("/api/record_action", { recommendation_id: recommendation_id, review_date: review_date, action_taken: "Took puppy to vet" }, "POST").done(function (data) {
+                    Success("Thank you, we will notify you in this date, if the puppy didn't get well")
+                    u.hide()
+
+                }).fail(function (err) {
+                    error("Error, can't update the server!");
+                })
+            }
+        });
     })
 </script>
 {%endblock%}

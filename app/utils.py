@@ -12,6 +12,7 @@ from flask import current_app
 import pandas as pd
 import numpy as np
 import logging
+from flask_mailman import Mail, EmailMessage
 
 
 def get_session():
@@ -270,7 +271,7 @@ def get_user_meta(user_id):
         return results
 
 
-def update_recommendations_for_puppy(puppy: Puppy, assume_today_is: datetime = datetime.today().date(), user=current_user):
+def update_recommendations_for_puppy(puppy: Puppy, assume_today_is: datetime = datetime.today(), user=current_user):
     with current_app.app_context():
         # Get today status
         record = get_record_for_date(puppy, assume_today_is)
@@ -279,6 +280,7 @@ def update_recommendations_for_puppy(puppy: Puppy, assume_today_is: datetime = d
             "Weight": record.temp_value,
             "birth_weight": record.weight_value
         })
+        results=None
         # Get Yesterday Status
         age = calculate_puppy_age(puppy, assume_today_is)
         if age > 1:
@@ -295,6 +297,9 @@ def update_recommendations_for_puppy(puppy: Puppy, assume_today_is: datetime = d
                     recommendation = Recommendation(
                     msg=message, health_status=today_status, puppy_id=puppy.id, timestamp=assume_today_is)
                     db.session.add(recommendation)
+                    results=recommendation
+                    send_notification_mail("Puppy Recommendation",message,[user.email])
+
 
             else:
                 yesterday_status, yesterday_message = quick_check_recommendations_for_puppy({
@@ -318,17 +323,22 @@ def update_recommendations_for_puppy(puppy: Puppy, assume_today_is: datetime = d
                                 db.session.add(reco)
                             # Ask user if they took the puppy to vet and add review date
                             # Implement this logic based on your application flow
+                            msg=f"Have you taken the <a href='/puppies/{puppy.id}' class='text-dark'>{puppy.name}</a> to vert?"
                             recommendation = Recommendation(timestamp=assume_today_is, health_status="V", tag="review_qtn", rank=1,
-                                                            puppy_id=puppy.id, follow_up_status=True, msg=f"Have you taken the <a href='/puppies/{puppy.id}' class='text-dark'>{puppy.name}</a> to vert?")
+                                                            puppy_id=puppy.id, follow_up_status=True, msg=msg)
                             db.session.add(recommendation)
+                            send_notification_mail("Puppy Recommendation",msg,[user.email])
                     elif today_status == "M":
                         # Implement actions for when puppy health is improving
                         for reco in yesterday_recommendations:
                             reco.status = True
                             reco.follow_up_status = False
                             db.session.add(reco)
+                        msg=f"We have noticed that  <a href='/puppies/{puppy.id}' class='text-dark'>{puppy.name}</a> is getting better, keep on monitoring it!!"
                         recommendation = Recommendation(timestamp=assume_today_is, health_status="M", tag="keep_monitor", rank=1,
-                                                        puppy_id=puppy.id, msg=f"We have noticed that  <a href='/puppies/{puppy.id}' class='text-dark'>{puppy.name}</a> is getting better, keep on monitoring it!!")
+                                                        puppy_id=puppy.id, msg=msg)
+                        send_notification_mail("Puppy Recommendation",msg,[user.email])
+                        results=recommendation
                         db.session.add(recommendation)
                     else:
                         # Implement actions for when today's status is good
@@ -347,8 +357,11 @@ def update_recommendations_for_puppy(puppy: Puppy, assume_today_is: datetime = d
                         # Add recommendation for severe health issues
                         recommendation = Recommendation(
                             msg=message, health_status=today_status, puppy_id=puppy.id, timestamp=assume_today_is)
+                        send_notification_mail("Puppy Recommendation",message,user.email)
                         db.session.add(recommendation)
                         db.session.commit()
+                        results=recommendation
+
         else:  # Yersterday status was good
             if today_status == "G":
                 # Mark all recommendations of this Puppy as seen, and good
@@ -361,11 +374,14 @@ def update_recommendations_for_puppy(puppy: Puppy, assume_today_is: datetime = d
 
                 recommendation = Recommendation(
                     msg=message, health_status=today_status, puppy_id=puppy.id, timestamp=assume_today_is)
+                send_notification_mail("Puppy Recommendation",message,user.email)
+                results=recommendation
                 db.session.add(recommendation)
         db.session.commit()
+        return results
 
 
-def get_recommendations(user=current_user) -> Recommendation:
+def get_recommendations(user=current_user,puppy_id=None) -> Recommendation:
     """Get recommendations from the database for a specific user
 
     Args:
@@ -374,7 +390,9 @@ def get_recommendations(user=current_user) -> Recommendation:
     Returns:
         list: List of recommendations
     """
-
+    if puppy_id:
+        return get_recommendations_for_puppy(puppy_id)
+    
     puppies = get_puppies_for_user(user.id)
     recommendations = []
     for puppy in puppies:
@@ -540,10 +558,34 @@ def check_missing_updates(puppy_id):
     if missing_dates:
         missing_dates_str = ', '.join(date.strftime(
             '%Y-%m-%d') for date in missing_dates)
-        return f"Missing updates for {puppy.name} on the following dates: {missing_dates_str}", missing_dates
+        return f"Missing updates for <a href='/puppies/{puppy.id}' class='text-primary'>{puppy.name}</a> on the following dates: {missing_dates_str}", missing_dates
     else:
         return "All updates are recorded.", None
 
+def send_notification_mail(subject: str, notification_body: str, emails: list)->bool:
+    """To send email to given emails,
+
+    Args:
+        subject (str): Email subject
+        notification_body (str):Email body
+        emails (list): list of emails to send to
+    Returns:
+        bool: whether the email was sent or not
+    """
+    if not isinstance(emails, list):
+        emails = [emails]
+    try:
+        msg = EmailMessage(
+            subject=subject,
+            body=notification_body,
+            to=emails,
+            reply_to=['admin@tekon.co.zw']
+        )
+        msg.send()
+        return True  # Return True if the email is sent successfully
+    except Exception as e:
+        print(f'An exception occurred: {e}')
+        return False  # Return False if an exception occurs during the email sending process
 
 # def check_follow_ups():
 #     today = datetime.now().date()

@@ -66,6 +66,7 @@ fastjsonschema==2.19.1
 filelock==3.13.1
 flake8==7.0.0
 Flask==3.0.3
+flask-mailman
 Flask-BabelEx==0.9.4
 Flask-Login==0.6.3
 Flask-Mail==0.9.1
