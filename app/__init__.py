@@ -345,8 +345,11 @@ def update_puppy_health():
     record = PuppyRecords(date=_date, puppy_id=puppy_id,puppy=puppy, weight_value=weight, temp_value=temp)
     db.session.add(record)
     db.session.commit()
-    recommendations=update_recommendations_for_puppy(puppy)
-    return recommendations.to_dict(['-puppy']), 201
+    recommendation=update_recommendations_for_puppy(puppy,assume_today_is=_date)
+    if recommendation:
+        return recommendation.to_dict(['-puppy']), 201
+    else:
+        return {}
 
 
 #######################
@@ -392,7 +395,11 @@ def _fk_pragma_on_connect(dbapi_con, con_record):
 
 with app.app_context():
     from sqlalchemy import event
-    event.listen(db.get_engine(), 'connect', _fk_pragma_on_connect)
+
+    # Check if the engine is using SQLite
+    if 'sqlite' in db.get_engine().dialect.name:
+        event.listen(db.get_engine(), 'connect', _fk_pragma_on_connect)
+
     db.create_all()
     
     # build_sample_db(app,user_datastore)
