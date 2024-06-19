@@ -26,18 +26,18 @@
                     </div>
                     <div class="list-group">
                         {% for note in notifications%}
-                        <a href="#" class="list-group-item">
-                            <div class="row g-0 align-items-center">
+                        <button href="#" class="list-group-item text-start">
+                            <div class="row g-0">
                                 <div class="col-2">
                                     <i class="text-warning" data-feather="{{note.notification_icon}}"></i>
                                 </div>
                                 <div class="col-10">
                                     <div class="text-dark">{{note.notification_category}}</div>
-                                    <div class="text-muted small mt-1">{{note.message}}</div>
+                                    <div class="text-muted small mt-1">{{note.message|safe}}</div>
                                     <div class="text-muted small mt-1">{{note.time_created}}</div>
                                 </div>
                             </div>
-                        </a>
+                        </button>
                         {%endfor%}
                     </div>
                     <div class="dropdown-menu-footer">

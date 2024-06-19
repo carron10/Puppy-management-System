@@ -342,11 +342,11 @@ def update_puppy_health():
         return "Record for this date already exists", 400
 
     # Create a new record
-    record = PuppyRecords(date=_date, puppy_id=puppy_id, weight_value=weight, temp_value=temp)
+    record = PuppyRecords(date=_date, puppy_id=puppy_id,puppy=puppy, weight_value=weight, temp_value=temp)
     db.session.add(record)
     db.session.commit()
     recommendations=update_recommendations_for_puppy(puppy)
-    return recommendations, 201
+    return recommendations.to_dict(['-puppy']), 201
 
 
 #######################

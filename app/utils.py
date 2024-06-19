@@ -558,7 +558,8 @@ def check_missing_updates(puppy_id):
     if missing_dates:
         missing_dates_str = ', '.join(date.strftime(
             '%Y-%m-%d') for date in missing_dates)
-        return f"Missing updates for <a href='/puppies/{puppy.id}' class='text-primary'>{puppy.name}</a> on the following dates: {missing_dates_str}", missing_dates
+        puppy_link=f'<a href="/puppies/{puppy.id}" class="text-primary">{puppy.name}</a>'
+        return f"Missing updates for {puppy_link} on the following dates: {missing_dates_str}", missing_dates
     else:
         return "All updates are recorded.", None
 

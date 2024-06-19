@@ -1,5 +1,3 @@
-uwsgi
-Gunicorn
 psycopg2
 Flask
 Flask-Admin
@@ -8,6 +6,6 @@ flask-security-too
 email_validator
 sqlalchemy_serializer
 simple_websocket
+flask-mailman
 pandas
 numpy
-flask-mailman
