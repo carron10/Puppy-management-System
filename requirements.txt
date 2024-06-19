@@ -11,3 +11,7 @@ simple_websocket
 pandas
 numpy
 flask-mailman
+scikit-learn
+matplotlib
+tensorflow
+keras

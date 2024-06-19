@@ -6,6 +6,10 @@ flask-security-too
 email_validator
 sqlalchemy_serializer
 simple_websocket
-flask-mailman
 pandas
 numpy
+flask-mailman
+scikit-learn
+matplotlib
+tensorflow
+keras
