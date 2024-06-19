@@ -116,7 +116,7 @@ Dashboard
                         <div class="h5 float-start">Weight</div>
                         <select class="float-end border bg-white graph-type">
                             <option selected value="bar">bar</option>
-                            <option  value="line">Line</option>
+                            <option value="line">Line</option>
                             <option value="scatter">Scatter</option>
                         </select>
                     </div>
@@ -171,18 +171,14 @@ Dashboard
                         <h5 class="modal-title">Update Puppy Record</h5>
                         <p class=" text-info">Add temperature and weight for today or any day before today!</p>
                     </div>
-                    <form id="quick-check-puppy-health-form" class="needs-validation" novalidate>
+                    <form id="check-puppy-health-form" class="needs-validation" novalidate>
                         <div class="modal-body">
                             <div class="row">
 
                                 <div class="col-md-12 form-group p_star">
                                     <label for="message-text" class="col-form-label small muted mt-1">Puppy:</label>
-                                    <select title="Select|Search Puppy" data-selected-text-format="count>2"
-                                        data-live-search="true" required name="puppy_id" data-size="6"
-                                        class="form-control form-control-sm puppy">
-                                        {%for puppy in puppies%}
+                                    <select required name="puppy_id" class="form-control form-control-sm puppy">
                                         <option value="{{puppy.id}}">{{puppy.name}}</option>
-                                        {%endfor%}
                                     </select>
                                 </div>
                                 <div class="col-md-12 form-group p_star">
@@ -197,8 +193,8 @@ Dashboard
                                 <div class="col-md-12 form-group p_star">
                                     <label for="temperature"
                                         class="col-form-label small muted mt-1">Temperature:</label>
-                                    <input type="number" min="0" class="form-control form-control-sm" name="temperature"
-                                        required placeholder="Temperature">
+                                    <input type="number" min="0" step="0.01" class="form-control form-control-sm"
+                                        name="temperature" required placeholder="Temperature">
                                 </div>
                             </div>
                         </div>
@@ -213,6 +209,20 @@ Dashboard
     </div>
     <script>
         $(function () {
+            $("#update-puppy-health").click(function (e) {
+                var form = document.getElementById("check-puppy-health-form");
+
+                if (form.checkValidity() === true) {
+                    var data = getFormData("check-puppy-health-form")
+                    console.log(data)
+                    send("/api/update-puppy-health", data, "POST").done(function (result) {
+                        Success(result)
+                    }).fail(function (err) {
+                        error(`${err.responseText}`, err.statusText)
+                    })
+                }
+                $(form).addClass("was-validated");
+            })
             Chart.defaults.elements.line.borderWidth = 1;
             Chart.defaults.elements.point.radius = 1;
             function drawGraph(element, data, type = "bar", label) {
