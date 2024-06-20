@@ -1,5 +1,9 @@
 # Puppy Management System
 
+## Quick Start
+To view the website visit [here.](https://puppy-management-system.onrender.com/login)
+--- 
+
 ## Table of Contents
 
 - [Introduction](#introduction)
