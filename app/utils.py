@@ -272,7 +272,6 @@ def get_user_meta(user_id):
 
 
 def update_recommendations_for_puppy(puppy: Puppy, assume_today_is: datetime = datetime.today(), user=current_user):
-    with current_app.app_context():
         # Get today status
         record = get_record_for_date(puppy, assume_today_is)
         today_status, message = quick_check_recommendations_for_puppy({

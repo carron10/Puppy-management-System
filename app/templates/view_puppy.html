@@ -80,7 +80,7 @@ Dashboard
                             What was the review date?
                             <br>
                             <div class="col col-md-6">
-                                <input type="datetime-local" class="rounded-0 form-control form-control-sm w-50"
+                                <input type="datetime-local" class="rounded-0 form-control form-control-sm w-100"
                                     name="review_date" id="review_date">
                             </div>
                         </div>
@@ -105,7 +105,7 @@ Dashboard
                 {%endfor%}
             </div>
             <div class=" col-sm-6 px-1 my-2">
-                <button type="button" role="button" data-bs-toggle="modal" data-bs-target="#quick-check-puppy-health"
+                <button type="button" role="button" data-bs-toggle="modal" data-bs-target="#update-puppy-health"
                     class="btn btn-success btn-sm mt-1">Add new Record</button>
             </div>
         </div>
@@ -164,7 +164,7 @@ Dashboard
                 {% endfor %}
             </tbody>
         </table>
-        <div class="modal fade" data-bs-backdrop="false" id="quick-check-puppy-health" tabindex="-1" role="dialog">
+        <div class="modal fade" data-bs-backdrop="false" id="update-puppy-health" tabindex="-1" role="dialog">
             <div class="modal-dialog rounded-0 modal-lg">
                 <div class="modal-content rounded-0">
                     <div class="modal-header py-2">
@@ -191,10 +191,10 @@ Dashboard
                                         name="weight" placeholder=" Weight">
                                 </div>
                                 <div class="col-md-12 form-group p_star">
-                                    <label for="temperature"
+                                    <label for="Temperature"
                                         class="col-form-label small muted mt-1">Temperature:</label>
                                     <input type="number" min="0" step="0.01" class="form-control form-control-sm"
-                                        name="temperature" required placeholder="Temperature">
+                                        name="Temperature" required placeholder="Temperature">
                                 </div>
                             </div>
                         </div>
@@ -207,17 +207,60 @@ Dashboard
             </div>
         </div>
     </div>
+    <div class="modal" data-bs-backdrop="static" id="check-health-modal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-0">
+                <div class="modal-header py-2">
+                    <div class="h5">Waiting for results....</div>
+                    <!-- <button type="button" class="close btn" data-bs-dismiss="modal" aria-label="Close">
+                        <span class="h1" aria-hidden="true">&times;</span>
+                    </button> -->
+                </div>
+                <div class="modal-body">
+                    <div class="w-100 py-3 my-3">
+                        <div class="text-primary centered2">
+                            <span class="  spinner-border" role="status" aria-hidden="true"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         $(function () {
             $("#update-puppy-health").click(function (e) {
                 var form = document.getElementById("check-puppy-health-form");
 
                 if (form.checkValidity() === true) {
+
                     var data = getFormData("check-puppy-health-form")
                     console.log(data)
+                    $("#check-health-modal").modal("show")
                     send("/api/update-puppy-health", data, "POST").done(function (result) {
-                        Success(result)
+                        $("#check-health-modal").modal("hide")
+                        if (result && result.msg) {
+                            if (result.status == "V") {
+                                Swal.fire({
+                                    titleText: "Vertinary!",
+                                    text: result.msg,
+                                    iconHtml: '<i class="fa fa-bolt text-danger"></i>',
+                                    iconColor: 'red'
+                                })
+                            } else if (result.status == "M") {
+                                Swal.fire({
+                                    title: "Monitor!",
+                                    text: result.msg,
+                                    icon: 'warning'
+                                })
+                            } else {
+                                Success(result.msg, "Good")
+                            }
+                        } else {
+                            // Handle the case where result is an empty object or does not contain 'msg'
+                            Success("All Good, Your Puppy is in good health!!");
+                        }
                     }).fail(function (err) {
+                        $("#check-health-modal").modal("hide")
                         error(`${err.responseText}`, err.statusText)
                     })
                 }
