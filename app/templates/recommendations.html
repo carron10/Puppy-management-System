@@ -62,7 +62,7 @@ Dashboard
             </div>
         </div>
         {%else%}
-        <div class="card my-1 alert alert-danger p-0" role="alert">
+        <div class="card my-1 recommendation alert alert-danger p-0" role="alert">
             <div class="card-body py-1">
                 <div>
                     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
@@ -76,9 +76,9 @@ Dashboard
                 <span class="h6">Affected Puppy:</span>
                 <a href="/puppies/{{recommendation.puppy_id}}"
                     class="badge  bg-success btn">{{recommendation.puppy.name}}</a>
-                <!-- <button type="button" class="btn-sm badge btn-outline-warning">
-                        <i class="fas fa-trash text-dark" aria-hidden="true"></i>
-                    </button> -->
+                    <button type="button" class="btn-sm btn badge btn-warning dismiss-recommendation">
+                        dismiss
+                    </button>
             </div>
         </div>
         {%endif%}

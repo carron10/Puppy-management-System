@@ -80,7 +80,8 @@ Dashboard
                             What was the review date?
                             <br>
                             <div class="col col-md-6">
-                                <input type="datetime-local" class="rounded-0 form-control form-control-sm w-100"
+                                <input type="text" id="recommendation_id" hidden value="{{recommendation.id}}">
+                                <input type="datetime-local" class="rounded-0 form-control form-control-sm "
                                     name="review_date" id="review_date">
                             </div>
                         </div>
@@ -91,14 +92,21 @@ Dashboard
                     </div>
                 </div>
                 {%else%}
-                <div class="card my-1 alert alert-danger p-0" role="alert">
+                <div class="card my-1 alert alert-danger recommendation p-0" role="alert">
                     <div class="card-body py-1">
                         <div>
                             <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
                                 <use xlink:href="#exclamation-triangle-fill" />
                             </svg>
                             {{recommendation.msg| safe}}
+                            <input type="text" id="recommendation_id" hidden value="{{recommendation.id}}">
                         </div>
+                    </div>
+                    <div class="card-footer text-end py-1 my-0">
+
+                        <button type="button" class="btn-sm btn badge btn-warning dismiss-recommendation">
+                            dismiss
+                        </button>
                     </div>
                 </div>
                 {%endif%}
@@ -227,45 +235,7 @@ Dashboard
         </div>
     </div>
     <script>
-        $(function () {
-            $("#update-puppy-health").click(function (e) {
-                var form = document.getElementById("check-puppy-health-form");
-
-                if (form.checkValidity() === true) {
-
-                    var data = getFormData("check-puppy-health-form")
-                    console.log(data)
-                    $("#check-health-modal").modal("show")
-                    send("/api/update-puppy-health", data, "POST").done(function (result) {
-                        $("#check-health-modal").modal("hide")
-                        if (result && result.msg) {
-                            if (result.status == "V") {
-                                Swal.fire({
-                                    titleText: "Vertinary!",
-                                    text: result.msg,
-                                    iconHtml: '<i class="fa fa-bolt text-danger"></i>',
-                                    iconColor: 'red'
-                                })
-                            } else if (result.status == "M") {
-                                Swal.fire({
-                                    title: "Monitor!",
-                                    text: result.msg,
-                                    icon: 'warning'
-                                })
-                            } else {
-                                Success(result.msg, "Good")
-                            }
-                        } else {
-                            // Handle the case where result is an empty object or does not contain 'msg'
-                            Success("All Good, Your Puppy is in good health!!");
-                        }
-                    }).fail(function (err) {
-                        $("#check-health-modal").modal("hide")
-                        error(`${err.responseText}`, err.statusText)
-                    })
-                }
-                $(form).addClass("was-validated");
-            })
+        $(function () { 
             Chart.defaults.elements.line.borderWidth = 1;
             Chart.defaults.elements.point.radius = 1;
             function drawGraph(element, data, type = "bar", label) {
@@ -333,53 +303,8 @@ Dashboard
                 // Update the chart with the new configuration
                 existingChart.update();
             })
-            $(".vertinary-update-yes").click(function () {
-                var u = $(this).parents(".vertinary-update").first()
-                u.find(".update-qtn,.vertinary-update-yes").addClass("visually-hidden")
-                u.find(".review-date,.vertinary-update-done").removeClass("visually-hidden")
-            })
-            $(".vertinary-update-done").click(function () {
-                var u = $(this).parents(".vertinary-update").first(),
-                    review_date = u.find(".review-date #review_date").val()
-                send("/api/record_action", { review_date: review_date, action_taken: "Took puppy to vet" }, "POST").done(function (data) {
-                    u.hide()
-                }).fail(function (err) {
-                    error("Error, can't update the server!");
-                })
-            });
+          
         })
     </script>
-
-    <!-- <div class="container">
-        <h2>Puppy Details</h2>
-        <div class="dropdown-divider"></div>
-        <div class="row">
-            <div class="col-md-6">
-                <form>
-                    <div class="form-group">
-                        <label for="name">Name:</label>
-                        <input type="text" class="form-control" id="name" value="{{ puppy.name }}" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="breed">Breed:</label>
-                        <input type="text" class="form-control" id="breed" value="{{ puppy.breed }}" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="birth_weight">Birth Weight:</label>
-                        <input type="number" class="form-control" id="birth_weight" value="{{ puppy.birth_weight }}"
-                            readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="birth_date">Birth Date:</label>
-                        <input type="text" class="form-control" id="birth_date" value="{{ puppy.birth_date }}" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="sex">Sex:</label>
-                        <input type="text" class="form-control" id="sex" value="{{ puppy.sex }}" readonly>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div> -->
-</div>
+    </div>
 {% endblock %}

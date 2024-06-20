@@ -395,8 +395,8 @@ def update_puppy_health():
                           puppy=puppy, weight_value=weight, temp_value=temp)
     db.session.add(record)
     db.session.commit()
-    recommendation = update_recommendations_for_puppy(puppy, assume_today_is=_date)
-    print("Recommendation",recommendation)
+    recommendation = update_recommendations_for_puppy(
+        puppy, assume_today_is=_date)
     if recommendation is not None:
         return {
             "msg": recommendation.msg,
@@ -442,6 +442,21 @@ def record_action():
     )
     db.session.add(user_action)
     db.session.commit()
+    return "Done"
+
+
+@app.route("/api/dismiss_recommendation",methods=["POST"])
+@login_required
+def dismiss_recommendation():
+    user_id = current_user.id
+    recommendation_id = request.form.get("recommendation_id")
+    recommendation = (Recommendation.query.
+                      filter_by(id=recommendation_id).first())
+    if recommendation != None:
+        recommendation.status=True
+        db.session.add(recommendation)
+        db.session.commit()
+
     return "Done"
 
 

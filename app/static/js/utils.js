@@ -127,3 +127,87 @@ function send(url, data, method) {
         data: data
     });
 }
+
+$(function () {
+    var color_classes = ['text-success', 'text-danger', 'text-primary'], i = 0;
+
+    setInterval(function () {
+        if (i != 0) {
+            $('.spinner-border').removeClass(color_classes[i - 1])
+        }
+        $('.spinner-border').addClass(color_classes[i])
+        if (i == color_classes.length - 1) {
+            i = 0
+        }
+        i++;
+    }, 20)
+    $("#update-puppy-health").click(function (e) {
+        var form = document.getElementById("check-puppy-health-form");
+
+        if (form.checkValidity() === true) {
+            var data = getFormData("check-puppy-health-form")
+            console.log(data)
+            $("#check-health-modal").modal("show")
+            send("/api/update-puppy-health", data, "POST").done(function (result) {
+                $("#check-health-modal").modal("hide")
+                if (result && result.msg) {
+                    if (result.status == "V") {
+                        Swal.fire({
+                            titleText: "Vertinary!",
+                            text: result.msg,
+                            iconHtml: '<i class="fa fa-bolt text-danger"></i>',
+                            iconColor: 'red'
+                        })
+                    } else if (result.status == "M") {
+                        Swal.fire({
+                            title: "Monitor!",
+                            text: result.msg,
+                            icon: 'warning'
+                        })
+                    } else {
+                        Success(result.msg, "Good")
+                    }
+                } else {
+                    // Handle the case where result is an empty object or does not contain 'msg'
+                    Success("All Good, Your Puppy is in good health!!");
+                }
+            }).fail(function (err) {
+                $("#check-health-modal").modal("hide")
+                error(`${err.responseText}`, err.statusText)
+            })
+        }
+        $(form).addClass("was-validated");
+
+    })
+    $(".vertinary-update-yes").click(function () {
+        var u = $(this).parents(".vertinary-update").first()
+        u.find(".update-qtn,.vertinary-update-yes").addClass("visually-hidden")
+        u.find(".review-date,.vertinary-update-done").removeClass("visually-hidden")
+    })
+    $(".vertinary-update-done").click(function () {
+        var u = $(this).parents(".vertinary-update").first(),
+            review_date = u.find(".review-date #review_date").val(),
+            recommendation_id = u.find(".review-date #recommendation_id").val();
+        if (review_date === '') {
+            error("Please input the review date!");
+        } else {
+            send("/api/record_action", { recommendation_id: recommendation_id, review_date: review_date, action_taken: "Took puppy to vet" }, "POST").done(function (data) {
+                Success("Thank you, we will notify you in this date, if the puppy didn't get well")
+                u.hide()
+
+            }).fail(function (err) {
+                error("Error, can't update the server!");
+            })
+        }
+    });
+    $(".dismiss-recommendation").click(function () {
+        var u = $(this).parents(".recommendation").first(),
+            recommendation_id = u.find("#recommendation_id").val();
+        send("/api/dismiss_recommendation", { recommendation_id: recommendation_id }, "POST").done(function (data) {
+
+            u.hide()
+        }).fail(function (err) {
+            error("Error, failed to dismiss the recommendation!");
+        })
+    })
+})

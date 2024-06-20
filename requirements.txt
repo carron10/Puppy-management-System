@@ -11,7 +11,7 @@ simple_websocket
 pandas
 numpy
 flask-mailman
-scikit-learn=1.3.2
+scikit-learn==1.3.2
 matplotlib
 # tensorflow
 # keras
